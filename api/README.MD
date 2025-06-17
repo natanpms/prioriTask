@@ -37,3 +37,7 @@ php leaf db:migrate
 ## Deployment instructions
 
 Check out the [Leaf documentation](https://leafphp.dev/learn/deployment/) for more information on how to deploy your Leaf app.
+
+## run local
+
+php -S localhost:5500 -t public

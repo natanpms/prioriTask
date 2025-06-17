@@ -2,6 +2,10 @@
 
 namespace App\Controllers\Auth;
 
+use App\Services\Auth\LoginService;
+
+use function Psy\debug;
+
 class LoginController extends Controller
 {
     public function store()
@@ -11,30 +15,15 @@ class LoginController extends Controller
             'password' => 'string',
         ]);
 
-        if (!$data) {
-            return response()->exit([
-                'message' => 'Validation failed',
-                'data' => request()->errors(),
-            ], 400);
-        }
+        $auth = new LoginService($data);
 
-        $success = auth()->login($data);
-
-        if (!$success) {
-            return response()->exit([
-                'message' => 'Login failed',
-                'data' => auth()->errors(),
-            ], 400);
-        }
-
-        response()->json([
-            'message' => 'Login successful',
-            'data' => auth()->data(),
-        ]);
+        $auth->login();
     }
 
-    public function logout()
+    public function logoutUser()
     {
-        auth()->logout();
+        $auth = new LoginService(request()->user());
+        
+        $auth->logout();
     }
 }

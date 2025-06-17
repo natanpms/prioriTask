@@ -15,7 +15,7 @@ app()->group('/auth', function () {
 
 app()->post('/auth/logout', [
     'middleware' => 'auth.required',
-    'Auth\LoginController@logout'
+    'Auth\LoginController@logoutUser'
 ]);
 
 app()->group('/user', [
