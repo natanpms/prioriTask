@@ -4,8 +4,6 @@ namespace App\Controllers\Auth;
 
 use App\Services\Auth\LoginService;
 
-use function Psy\debug;
-
 class LoginController extends Controller
 {
     public function store()
