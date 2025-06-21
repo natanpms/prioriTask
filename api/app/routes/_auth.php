@@ -21,7 +21,8 @@ app()->post('/auth/logout', [
 app()->group('/user', [
     'middleware' => 'auth.required',
     function () {
-        app()->get('/', 'Auth\AccountController@index');
-        app()->post('/update', 'Auth\AccountController@update');
+        app()->get('', 'Auth\AccountController@index');
+        app()->patch('', 'Auth\AccountController@update');
+        app()->delete('', 'Auth\AccountController@delete');
     },
 ]);

@@ -8,7 +8,7 @@ class LoginController extends Controller
 {
     public function store()
     {
-        $data = request()->validate([
+        $data = $this->requestValidate([
             'email' => 'email',
             'password' => 'string',
         ]);
@@ -21,7 +21,7 @@ class LoginController extends Controller
     public function logoutUser()
     {
         $auth = new LoginService(request()->user());
-        
+
         $auth->logout();
     }
 }

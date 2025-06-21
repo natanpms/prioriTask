@@ -53,7 +53,8 @@
         },
         "exclude-from-classmap": [
             "app/database/migrations"
-        ]
+        ],
+        "files": ["app/utils/index.php"]
     },
     "scripts": {
         "post-root-package-install": [

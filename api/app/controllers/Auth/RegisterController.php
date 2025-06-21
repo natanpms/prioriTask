@@ -8,7 +8,7 @@ class RegisterController extends Controller
 {
     public function store()
     {
-        $credentials = request()->validate([
+        $credentials = $this->requestValidate([
             'name' => 'string',
             'email' => 'email',
             'password' => 'min:8',

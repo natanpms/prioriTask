@@ -8,7 +8,6 @@ class AccountController extends Controller
 {
     public function index()
     {
-
         response()->json([
             'message' => 'User account',
             'data' => auth()->user()->get(),
@@ -17,7 +16,7 @@ class AccountController extends Controller
 
     public function update()
     {
-        $data = request()->validate([
+        $data = $this->requestValidate([
             'email' => 'optional|email',
             'name' => 'optional|text',
         ]);
@@ -25,5 +24,20 @@ class AccountController extends Controller
         $accountService = new AccountService($data);
 
         $accountService->updateUserInfo();
+    }
+
+    public function delete()
+    {
+        $user = auth()->user();
+
+        if (!empty($user)) {
+            $credentials = ["id" => $user->id, "email" => $user->email];
+            $accountService = new AccountService($credentials);
+            $accountService->deleteUser();
+        } else {
+            return response()->json([
+                'message' => 'Erro ao buscar usuário para deletar conta.',
+            ], 400);
+        }
     }
 }

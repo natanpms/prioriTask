@@ -7,5 +7,8 @@ namespace App\Controllers\Auth;
  */
 class Controller extends \App\Controllers\Controller
 {
-    //
+    public function requestValidate($rules = [])
+    {
+        return request()->validate($rules);
+    }
 }

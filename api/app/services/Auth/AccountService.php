@@ -2,6 +2,7 @@
 
 namespace App\Services\Auth;
 
+use App\Models\User;
 use App\Services\BaseService;
 
 class AccountService extends BaseService
@@ -30,5 +31,25 @@ class AccountService extends BaseService
         }
 
         $this->success(auth()->user()->get(), "Dados da conta atualizados com sucesso.", 200);
+    }
+
+    /**
+     * Função que remove usuário da aplicação
+     * @return void
+     */
+    public function deleteUser()
+    {
+        $user = User::where('id', $this->data['id']);
+
+        if($user){
+            $hasDeleted = $user->delete();
+
+            if(!$hasDeleted){
+                $this->error([],'Erro ao deletar conta.',400);
+            }
+
+                $this->success([],'Sucesso ao deletar conta.',200);
+
+        }
     }
 }
