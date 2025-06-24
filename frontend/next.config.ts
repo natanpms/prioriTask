@@ -1,7 +1,7 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  /* config options here */
-};
+  // Sem o campo `appDir`, pois já está habilitado por padrão
+}
 
-export default nextConfig;
+export default nextConfig
