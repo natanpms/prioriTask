@@ -1,7 +1,7 @@
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Transition } from '@headlessui/react';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
-import { FormEventHandler } from 'react';
+import { FormEventHandler, useState } from 'react';
 
 import DeleteUser from '@/components/delete-user';
 import HeadingSmall from '@/components/heading-small';
@@ -11,6 +11,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
+import { toast } from "sonner"
+import { MdOutlineErrorOutline } from "react-icons/md";
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -22,14 +24,15 @@ const breadcrumbs: BreadcrumbItem[] = [
 type ProfileForm = {
     name: string;
     email: string;
+    avatar_path: File | string | null;
 };
 
 export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: boolean; status?: string }) {
     const { auth } = usePage<SharedData>().props;
-
     const { data, setData, patch, errors, processing, recentlySuccessful } = useForm<Required<ProfileForm>>({
         name: auth.user.name,
         email: auth.user.email,
+        avatar_path: auth.user?.avatar_path || null,
     });
 
     const submit: FormEventHandler = (e) => {
@@ -37,6 +40,7 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
 
         patch(route('profile.update'), {
             preserveScroll: true,
+            forceFormData: true
         });
     };
 
@@ -49,6 +53,32 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                     <HeadingSmall title="Profile information" description="Update your name and email address" />
 
                     <form onSubmit={submit} className="space-y-6">
+                        <div className="grid w-full max-w-sm items-center gap-2">
+                            <Label htmlFor="picture">Avatar</Label>
+                            <Input
+                                id="avatar"
+                                type="file"
+                                className="mt-1 block w-full"
+                                onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    // validando se o arquivo tem no MAX 2MB
+                                    if (file && (file.size / (1024 * 1024)) > 2) {
+                                        return toast.custom((t) => (
+                                            <div className="flex justify-center items-center gap-2 bg-red-500 text-white p-3 rounded-lg shadow-lg">
+                                                <MdOutlineErrorOutline size={18} />
+                                                A imagem deve ser menor que 2MB.
+                                            </div>
+                                        ));
+                                    }
+
+                                    if (file) {
+                                        console.log(file)
+                                        setData('avatar_path', file)
+                                    }
+                                }}
+                            />
+                        </div>
+
                         <div className="grid gap-2">
                             <Label htmlFor="name">Name</Label>
 
@@ -105,7 +135,7 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                         )}
 
                         <div className="flex items-center gap-4">
-                            <Button disabled={processing}>Save</Button>
+                            <Button className='cursor-pointer' disabled={processing}>Save</Button>
 
                             <Transition
                                 show={recentlySuccessful}
