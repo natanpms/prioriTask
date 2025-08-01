@@ -16,7 +16,7 @@ import { MdOutlineErrorOutline } from "react-icons/md";
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Profile settings',
+        title: 'Configurações de perfil',
         href: '/settings/profile',
     },
 ];
@@ -46,11 +46,11 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Profile settings" />
+            <Head title="Configurações de perfil" />
 
             <SettingsLayout>
                 <div className="space-y-6">
-                    <HeadingSmall title="Profile information" description="Update your name and email address" />
+                    <HeadingSmall title="Informações do perfil" description="Atualize suas informações" />
 
                     <form onSubmit={submit} className="space-y-6">
                         <div className="grid w-full max-w-sm items-center gap-2">
@@ -72,7 +72,6 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                                     }
 
                                     if (file) {
-                                        console.log(file)
                                         setData('avatar_path', file)
                                     }
                                 }}
@@ -80,7 +79,7 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="name">Name</Label>
+                            <Label htmlFor="name">Nome</Label>
 
                             <Input
                                 id="name"
@@ -96,7 +95,7 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="email">Email address</Label>
+                            <Label htmlFor="email">Email</Label>
 
                             <Input
                                 id="email"
@@ -135,7 +134,7 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                         )}
 
                         <div className="flex items-center gap-4">
-                            <Button className='cursor-pointer' disabled={processing}>Save</Button>
+                            <Button className='cursor-pointer' disabled={processing}>Salvar</Button>
 
                             <Transition
                                 show={recentlySuccessful}
