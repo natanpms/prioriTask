@@ -12,15 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('categories', function (Blueprint $table) {
-        $table->id();
+            $table->id();
 
-         //relacionando com tabela de usuarios e caso do usuario ser deletado, os registros relacionados serao deletados
-        $table->foreignId('user_id')->constrained()->onDelete('cascade');  
+            //relacionando com tabela de usuarios e caso do usuario ser deletado, os registros relacionados serao deletados
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
 
-        $table->string('name');
-        $table->string('color')->nullable(); // cor escolhida para compor o frontend 
-        $table->timestamps();
-    });
+            $table->string('name');
+            $table->string('color')->nullable(); // cor escolhida para compor o frontend 
+            $table->timestamps();
+        });
     }
 
     /**
