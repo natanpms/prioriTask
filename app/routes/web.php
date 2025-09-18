@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Models\Category;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -15,7 +16,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
      Route::get('categories', function () {
-        return Inertia::render('categories');
+        return Inertia::render('categories', [
+            'categories'=> Category::where('user_id', auth()->id())->select('id', 'name', 'color')->get()
+        ]);
     })->name('categories');
 
     Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
