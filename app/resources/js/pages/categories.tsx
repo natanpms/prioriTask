@@ -8,7 +8,7 @@ import AppLayout from "@/layouts/app-layout";
 import { BreadcrumbItem } from "@/types";
 import { Head, useForm, usePage } from "@inertiajs/react";
 import { LoaderCircle } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { IoAddCircleOutline } from "react-icons/io5";
 import { toast } from "sonner";
 
@@ -30,6 +30,8 @@ const Categories: React.FC = () => {
         'color': ''
     });
 
+    const [filteredCategory, setFilteredCategory] = useState<Category[]>(props?.categories as Category[] || []);
+
     const handleNewCategory = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
@@ -45,6 +47,22 @@ const Categories: React.FC = () => {
                 })
             }
         });
+    }
+
+    const handleOrderCategories = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.currentTarget.value;
+
+        if (value === '') {
+            setFilteredCategory(props.categories as Category[]);
+            
+        } else {
+            const filtered = filteredCategory.filter((category) =>
+                category.name.toLowerCase().includes(value.toLowerCase())
+            );
+
+            setFilteredCategory(filtered);
+        }
+
     }
 
     return (
@@ -65,24 +83,23 @@ const Categories: React.FC = () => {
                             <h2 className="font-semibold text-lg text-primary/60 mb-2">Acompanhar Categoria</h2>
                             <div className="w-1/2">
                                 <Input
-                                    id="nome-categoria"
+                                    id="filtro-categoria"
                                     type="text"
-                                    required
                                     autoFocus
                                     tabIndex={1}
-                                    autoComplete="nome-categoria"
-                                    // onChange={(e) => setData('nome-categoria', e.target.value)}
-                                    placeholder="Filtrar categorias..."
+                                    autoComplete="filtro-categoria"
+                                    onChange={handleOrderCategories}
+                                    placeholder="Filtrar nomes..."
                                 />
                             </div>
                         </div>
 
                         <div className="w-full">
-                            <DataTable columns={columns} data={props?.categories as Category[]} />
+                            <DataTable columns={columns} data={filteredCategory} />
                         </div>
                     </div>
                     {/* card de adicionar conteudo */}
-                    <div className="bg-primary-foreground p-4 rounded-md shadow-md w-1/2">
+                    <div className="bg-primary-foreground p-4 rounded-md shadow-md lg:w-1/2 w-full">
                         <div className="flex flex-col justify-start space-y-1">
                             <h2 className="font-semibold text-lg text-primary/60 mb-2">Nova Categoria</h2>
                             <p className="text-sm font-light text-gray-500">Crie uma nova categoria para organizar suas tarefas</p>
