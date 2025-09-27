@@ -1,5 +1,5 @@
 import { DataTable } from "@/components/data-table";
-import { Category, columns } from "@/components/columns";
+import { Category, columnsComponent } from "@/components/columns";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,9 @@ import { LoaderCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { IoAddCircleOutline } from "react-icons/io5";
 import { toast } from "sonner";
+import { useDialog } from "@/hooks/use-dialog";
+import { DialogWrapper } from "@/components/ui/dialog-wrapper";
+import { DialogDescription } from "@/components/ui/dialog";
 
 type ResponseFlash = {
     success?: string;
@@ -30,7 +33,39 @@ const Categories: React.FC = () => {
         'color': ''
     });
 
+    const { onOpen, onClose, isOpen } = useDialog();
+
+    const [typeModal, setTypeModal] = useState<'edit' | 'delete' | null>(null);
+    const [category, setCategory] = useState<Category>({ id: '', name: '', color: '' });
+
+    const handleEditCategory = (category: Category) => {
+        console.log("Editar categoria:", category);
+
+    };
+
+    const handleDeleteCategory = (category: Category) => {
+        console.log("Excluir categoria:", category);
+
+    };
+
+    const handleOpenModal = (type: 'edit' | 'delete', category: Category) => {
+        setTypeModal(type);
+        setCategory(category);
+        onOpen();
+    }
+
+    /* Copiar ID da categoria */
+    const handleCopyCategory = (category: Category) => {
+        navigator.clipboard.writeText(category.id);
+        toast.success("ID copiado!");
+    };
+
     const [filteredCategory, setFilteredCategory] = useState<Category[]>(props?.categories as Category[] || []);
+
+    const columns = columnsComponent({
+        onOpenLocal: (type, category) => handleOpenModal(type, category),
+        onCopy: handleCopyCategory,
+    });
 
     const handleNewCategory = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -154,6 +189,65 @@ const Categories: React.FC = () => {
                     </div>
 
                 </div>
+
+                {isOpen &&
+                    <DialogWrapper
+                        title={typeModal === 'edit' ? 'Editar Categoria' : 'Excluir Categoria'}
+                        isOpen={isOpen}
+                        onClose={onClose}
+                        buttonText={typeModal === 'edit' ? 'Confirmar alterações' : 'Excluir'}
+                        handleClick={() => {
+
+                            if (typeModal === 'edit') {
+                                return handleEditCategory(category);
+                            }
+
+                            return handleDeleteCategory(category);
+                        }}
+                    >
+                        {(typeModal === 'edit') ? (
+                            <>
+                                <div className="w-full">
+                                    <Label htmlFor="email">Nome <span className="text-red-500">*</span></Label>
+                                    <Input
+                                        id="nome-categoria"
+                                        type="text"
+                                        required
+                                        autoFocus
+                                        tabIndex={1}
+                                        defaultValue={category.name}
+                                        autoComplete="nome-categoria"
+                                        placeholder="Exemplo: Trabalho, Pessoal, Estudos..."
+                                    />
+                                </div>
+
+                                <div className="w-full">
+                                    <Label htmlFor="color">Cor <span className="text-red-500">*</span></Label>
+                                    <Input
+                                        id="color"
+                                        type="color"
+                                        required
+                                        autoFocus
+                                        tabIndex={1}
+                                        autoComplete="color"
+                                        defaultValue={category.color}
+                                    />
+                                </div>
+                            </>
+
+
+                        ) : (
+                            <DialogDescription>
+                                Esta ação não pode ser desfeita.
+                                <strong>
+                                    Isso excluirá permanentemente a categoria e removerá as tasks que essa categoria pertence.
+                                </strong>
+                            </DialogDescription>
+
+                        )}
+
+                    </DialogWrapper>
+                }
 
             </div>
         </AppLayout>

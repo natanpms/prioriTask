@@ -6,11 +6,12 @@ interface DialogWrapperProps  {
     isOpen: boolean;
     onClose: () => void;
     handleClick: () => void;
-    buttonText: string;
+    buttonText?: string;
+    variant?: "default" | "destructive";
     children: React.ReactNode;
 }
 
-export const DialogWrapper: React.FC<DialogWrapperProps> = ({ title, isOpen, onClose, handleClick, buttonText, children }) => {
+export const DialogWrapper: React.FC<DialogWrapperProps> = ({ title, isOpen, onClose, handleClick, buttonText = 'Salvar', variant, children }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
@@ -18,7 +19,7 @@ export const DialogWrapper: React.FC<DialogWrapperProps> = ({ title, isOpen, onC
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
         {children}
-        <Button onClick={handleClick}>{buttonText}</Button>
+        <Button variant={variant} onClick={handleClick}>{buttonText}</Button>
       </DialogContent>
     </Dialog>
   );

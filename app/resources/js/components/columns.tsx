@@ -25,74 +25,66 @@ type subMenuProps = {
     handleClick: () => void;
 }
 
-const subMenuOptions: subMenuProps[] = [
-    { title: 'Copiar ID', variant: 'copy', icon: <IoCopyOutline />, handleClick: () => { } },
-    { title: 'Editar categoria', variant: 'edit', icon: <MdModeEdit />, handleClick: () => { } },
-    { title: 'Excluir categoria', variant: 'destructive', icon: <MdDelete />, handleClick: () => { } },
-];
 
-export const columns: ColumnDef<Category>[] = [
-    {
-        accessorKey: "name",
-        header: ({ column }) => {
+type HandlersCategory = {
+    onOpenLocal: (typeCategory: 'edit' | 'delete', category : Category) => void;
+    onCopy?: (category: Category) => void;  
+}
 
-            return (
+export const columnsComponent = (handlers: HandlersCategory): ColumnDef<Category>[] => [
+        {
+            accessorKey: "name",
+            header: ({ column }) => (
                 <Button
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    Nome
-                    <ArrowUpDown />
+                    Nome <ArrowUpDown />
                 </Button>
-            )
+            ),
         },
-    },
-    {
-        accessorKey: "color",
-        header: "Cor",
-        cell: ({ row }) => {
+        {
+            accessorKey: "color",
+            header: "Cor",
+            cell: ({ row }) => {
+                const category = row.original;
 
-            return (
-                <div className="flex justify-between items-center gap-2 w-full">
-                    <div className="flex items-center gap-2">
-                        <div
-                            className="h-5 w-5 rounded"
-                            style={{ backgroundColor: row.original.color }}
-                        >
+                const subMenuOptions: subMenuProps[] = [
+                    { title: "Copiar ID", variant: "copy", icon: <IoCopyOutline />, handleClick: () => handlers.onCopy?.(category) },
+                    { title: "Editar categoria", variant: "edit", icon: <MdModeEdit />, handleClick: () => handlers.onOpenLocal('edit', category) },
+                    { title: "Excluir categoria", variant: "destructive", icon: <MdDelete />, handleClick: () => handlers.onOpenLocal('delete', category) },
+                ];
 
+                return (
+                    <div className="flex justify-between items-center gap-2 w-full">
+                        <div className="flex items-center gap-2">
+                            <div className="h-5 w-5 rounded" style={{ backgroundColor: category.color }} />
+                            <span>{category.color}</span>
                         </div>
-                        <span>{row.original.color}</span>
-                    </div>
 
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                                <span className="sr-only">Open menu</span>
-                                <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Opções</DropdownMenuLabel>
-                            {subMenuOptions?.map((sub, index) => (
-                                <div className="flex justify-start items-center">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" className="h-8 w-8 p-0">
+                                    <span className="sr-only">Open menu</span>
+                                    <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>Opções</DropdownMenuLabel>
+                                {subMenuOptions.map((sub, idx) => (
                                     <DropdownMenuItem
-                                        className={`w-full cursor-pointer`}
-                                        key={index}
+                                        key={idx}
+                                        className="flex justify-between items-center cursor-pointer"
                                         variant={sub.variant}
                                         onClick={sub.handleClick}
                                     >
-                                        {sub.title}
-                                        <div>
-                                            {sub.icon}
-                                        </div>
+                                        {sub.title} {sub.icon}
                                     </DropdownMenuItem>
-                                </div>
-                            ))}
-
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                </div>
-            )
+                                ))}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
+                );
+            },
         },
-    }
-]
+    ];
