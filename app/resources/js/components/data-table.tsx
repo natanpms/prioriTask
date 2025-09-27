@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+
 import {
   ColumnDef,
   flexRender,
@@ -21,6 +22,8 @@ import {
 } from "@/components/ui/table"
 
 import { Button } from "@/components/ui/button"
+import { FaAngleLeft } from "react-icons/fa";
+import { useIsMobile } from "@/hooks/use-mobile"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -32,7 +35,8 @@ export function DataTable<TData, TValue>({
   data,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
-
+  const isMobile = useIsMobile();
+ 
   const table = useReactTable({
     data,
     columns,
@@ -43,7 +47,25 @@ export function DataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: {
+        pageSize: 5, // itens por pagina
+        pageIndex: 0,
+      },
+    },
   })
+
+  React.useEffect(() => {
+    table.setPageSize(isMobile ? 4 : 6)
+  }, [isMobile, table])
+
+  const pageTot = table.getPageCount();
+  const [page, setPage] = React.useState(1);
+
+  React.useEffect(() => {
+    setPage(table.getState().pagination.pageIndex + 1);
+  }, [table.getState().pagination.pageIndex]);
+
 
   return (
     <div className="overflow-hidden rounded-md border">
@@ -56,9 +78,9 @@ export function DataTable<TData, TValue>({
                   {header.isPlaceholder
                     ? null
                     : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
                 </TableHead>
               ))}
             </TableRow>
@@ -87,18 +109,19 @@ export function DataTable<TData, TValue>({
           )}
         </TableBody>
       </Table>
-        
+
       {/* Paginação */}
       <div className="flex items-center justify-around space-x-2 py-4">
-       
-        <div className="space-x-2">
+
+        <div className="flex justify-center space-x-2">
           <Button
             variant="outline"
             size="sm"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            Previous
+            <FaAngleLeft />
+
           </Button>
           <Button
             variant="outline"
@@ -106,7 +129,8 @@ export function DataTable<TData, TValue>({
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            Next
+
+            {page} de {pageTot}
           </Button>
         </div>
       </div>

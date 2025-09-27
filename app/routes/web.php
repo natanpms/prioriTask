@@ -21,8 +21,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ]);
     })->name('categories');
 
+    // criar categoria
     Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+    // deletar categoria
+    Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
 
+     // update categoria
+    Route::patch('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
 
     Route::get('tasks', function () {
         return Inertia::render('tasks');

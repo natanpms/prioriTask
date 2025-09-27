@@ -28,9 +28,15 @@ const Categories: React.FC = () => {
     ];
     const { props } = usePage();
     const response = props.flash as ResponseFlash;
-    const { data, reset, recentlySuccessful, setData, processing, errors, post } = useForm({
+    const { data: createData, setData: setCreateData, reset: resetCreate, processing: processingCreate, errors: errorsCreate, post: postCreate } = useForm({
         'nome-categoria': '',
         'color': ''
+    });
+    const { delete: deleteCategory, processing: processingDelete } = useForm({});
+
+    const { data: updateData, setData: setUpdateData, patch, processing: processingUpdate } = useForm({
+        'nome-categoria': '',
+        'color': '',
     });
 
     const { onOpen, onClose, isOpen } = useDialog();
@@ -38,13 +44,38 @@ const Categories: React.FC = () => {
     const [typeModal, setTypeModal] = useState<'edit' | 'delete' | null>(null);
     const [category, setCategory] = useState<Category>({ id: '', name: '', color: '' });
 
+    // Atualizar categoria
     const handleEditCategory = (category: Category) => {
-        console.log("Editar categoria:", category);
 
+        patch(route('categories.update', category.id), {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast.success(response.success || "Categoria atualizada!");
+                setFilteredCategory(prev => prev.map(c => c.id === category.id ? { ...c, name: updateData['nome-categoria'], color: updateData.color } : c));
+                onClose();
+            },
+            onError: (error) => {
+                toast.error("Erro ao atualizar categoria: " + error['nome-categoria']);
+            }
+        });
     };
 
+    // Excluir categoria
     const handleDeleteCategory = (category: Category) => {
-        console.log("Excluir categoria:", category);
+        deleteCategory(route('categories.destroy', category.id), {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast.success(response.success || "Categoria excluída!");
+
+                onClose();
+
+                setFilteredCategory(prev => prev.filter(c => c.id !== category.id));
+
+            },
+            onError: (error) => {
+                toast.error("Erro ao excluir categoria:" + error);
+            }
+        });
 
     };
 
@@ -52,6 +83,13 @@ const Categories: React.FC = () => {
         setTypeModal(type);
         setCategory(category);
         onOpen();
+
+        if (type === 'edit') {
+            setUpdateData({
+                'nome-categoria': category.name,
+                'color': category.color
+            });
+        }
     }
 
     /* Copiar ID da categoria */
@@ -70,14 +108,15 @@ const Categories: React.FC = () => {
     const handleNewCategory = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        post(route("categories.store"), {
+        postCreate(route("categories.store"), {
             preserveScroll: true,
             onSuccess: () => {
-                reset();
+                resetCreate();
                 toast.success(response.success || 'Categoria criada com sucesso!');
+
             },
             onError: () => {
-                Object.values(errors).forEach((err) => {
+                Object.values(errorsCreate).forEach((err) => {
                     toast.error(err);
                 })
             }
@@ -89,7 +128,7 @@ const Categories: React.FC = () => {
 
         if (value === '') {
             setFilteredCategory(props.categories as Category[]);
-            
+
         } else {
             const filtered = filteredCategory.filter((category) =>
                 category.name.toLowerCase().includes(value.toLowerCase())
@@ -149,7 +188,7 @@ const Categories: React.FC = () => {
                                         autoFocus
                                         tabIndex={1}
                                         autoComplete="nome-categoria"
-                                        onChange={(e) => setData('nome-categoria', e.target.value)}
+                                        onChange={(e) => setCreateData('nome-categoria', e.target.value)}
                                         placeholder="Exemplo: Trabalho, Pessoal, Estudos..."
                                     />
                                 </div>
@@ -163,25 +202,19 @@ const Categories: React.FC = () => {
                                         autoFocus
                                         tabIndex={1}
                                         autoComplete="color"
-                                        onChange={(e) => setData('color', e.target.value)}
+                                        onChange={(e) => setCreateData('color', e.target.value)}
                                     />
                                 </div>
 
-                                <Button
-                                    type="submit"
-                                    variant="default"
-                                    className="mt-4  cursor-pointer w-1/2">
-                                    {processing ? (
+                                <Button type="submit" variant="default" className="mt-4 w-1/2 cursor-pointer">
+                                    {processingCreate ? (
                                         <LoaderCircle className="h-4 w-4 animate-spin" />
-
                                     ) : (
                                         <>
                                             <IoAddCircleOutline size={30} />
                                             Adicionar
                                         </>
-                                    )
-                                    }
-
+                                    )}
                                 </Button>
                             </form>
 
@@ -195,6 +228,7 @@ const Categories: React.FC = () => {
                         title={typeModal === 'edit' ? 'Editar Categoria' : 'Excluir Categoria'}
                         isOpen={isOpen}
                         onClose={onClose}
+                        processing={typeModal === 'edit' ? processingUpdate : processingDelete}
                         buttonText={typeModal === 'edit' ? 'Confirmar alterações' : 'Excluir'}
                         handleClick={() => {
 
@@ -217,7 +251,7 @@ const Categories: React.FC = () => {
                                         tabIndex={1}
                                         defaultValue={category.name}
                                         autoComplete="nome-categoria"
-                                        placeholder="Exemplo: Trabalho, Pessoal, Estudos..."
+                                        onChange={(e) => setUpdateData('nome-categoria', e.target.value)}
                                     />
                                 </div>
 
@@ -231,6 +265,7 @@ const Categories: React.FC = () => {
                                         tabIndex={1}
                                         autoComplete="color"
                                         defaultValue={category.color}
+                                        onChange={(e) => setUpdateData('color', e.target.value)}
                                     />
                                 </div>
                             </>
