@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\TaskPriority;
+use App\Enums\TaskStep;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -18,6 +19,7 @@ return new class extends Migration {
             $table->string('title');
             $table->text('description')->nullable();
             $table->enum('priority', array_map(fn($case) => $case->value, TaskPriority::cases()));
+            $table->enum('step', array_map(fn($case) => $case->value, TaskStep::cases()));
             $table->dateTime('due_date')->nullable();
             $table->boolean('is_completed')->default(false);
             $table->timestamps();

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\TaskPriority;
+use App\Enums\TaskStep;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -20,12 +21,14 @@ class Task extends Model
         'title',
         'description',
         'priority',
+        'step',
         'due_date',
         'is_completed',
     ];
 
     protected $casts = [
         'priority' => TaskPriority::class,
+        'step' => TaskStep::class,
         'due_date' => 'datetime',
         'is_completed' => 'boolean'
     ];
