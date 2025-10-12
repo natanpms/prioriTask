@@ -5,8 +5,8 @@ import { CSS } from '@dnd-kit/utilities';
 import { usePage } from '@inertiajs/react';
 import { IoCopyOutline } from 'react-icons/io5';
 import { MdDelete, MdModeEdit } from 'react-icons/md';
-import { FaEdit } from 'react-icons/fa';
 import DropdownWrapper from './dropdown-wrapper';
+import { FaEdit } from 'react-icons/fa';
 
 export const KanbanCard: React.FC<{ task: Task; id: string }> = ({ task, id }) => {
     let bgColorPriority;

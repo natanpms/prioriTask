@@ -1,4 +1,4 @@
-import { ColumnTask, Task } from "@/types";
+import { ColumnTask } from "@/types";
 import { KanbanCard } from "./kanban-card";
 import { DndContext, PointerSensor, useSensor, useSensors, closestCenter, DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
@@ -33,8 +33,8 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({ title, tasks, column
         <h2 className="font-bold text-gray-700 mb-2">{title}</h2>
         <SortableContext items={tasks.map((task) => `${columnIndex}-${task.id}`)} strategy={verticalListSortingStrategy}>
           <div className="space-y-4">
-            {tasks.map((task) => (
-              <KanbanCard key={task.id} task={task} id={`${columnIndex}-${task.id}`} />
+            {tasks.map((task,index) => (
+              <KanbanCard key={index} task={task} id={`${columnIndex}-${task.id}`} />
             ))}
           </div>
         </SortableContext>

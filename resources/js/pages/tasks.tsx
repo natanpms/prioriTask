@@ -26,6 +26,8 @@ const Tasks: React.FC = () => {
         { title: 'Concluído', tasks: [] },
     ]);
 
+    const [filteredTasks, setFilteredTasks] = useState<Task[]>(tasks);
+
     useEffect(() => {
         setColumns([
             { title: 'Pendente', tasks: tasks.filter((t) => t.step?.toLowerCase().includes('pendente')) },
@@ -33,7 +35,6 @@ const Tasks: React.FC = () => {
             { title: 'Concluído', tasks: tasks.filter((t) => t.step?.toLowerCase().includes('concluido')) },
         ]);
     }, [tasks]);
-
 
     const { data, setData, reset, errors, post } = useForm({
         title: '',
@@ -76,6 +77,22 @@ const Tasks: React.FC = () => {
         });
     };
 
+    const handleFilterCategories = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.currentTarget.value.trim().toLowerCase();
+
+        if (value === '') {
+            setFilteredTasks(tasks);
+            return;
+        }
+
+        const matchingCategories = categories.filter((category) => category.name.toLowerCase().includes(value)).map((category) => category.id);
+
+        // filtre as tasks de acordo com a categoria digitada
+        const filtered = tasks.filter((task) => matchingCategories.includes(task.category_id));
+
+        setFilteredTasks(filtered);
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Tasks" />
@@ -88,12 +105,12 @@ const Tasks: React.FC = () => {
 
                     <div className="flex w-full flex-col items-center justify-end space-y-2 md:flex-row md:space-y-0 md:space-x-3">
                         <div className="relative w-full md:w-1/3 xl:w-1/4">
-                            <Input placeholder="Filtrar categorias..." className="w-full" />
+                            <Input placeholder="Filtrar categorias..." className="w-full" onChange={handleFilterCategories} />
                             <div className="absolute top-0 right-0 flex h-full w-10 items-center justify-center text-primary">
                                 <FaSearch />
                             </div>
                         </div>
-                        <div className="flex w-full justify-start md:w-auto">
+                        <div className="flex w-auto justify-start">
                             <button
                                 type="button"
                                 className="flex w-full cursor-pointer items-center space-x-2 rounded-md border-2 border-primary bg-white p-1 text-primary transition-transform duration-200 hover:scale-105 sm:w-1/4 md:w-full"
@@ -106,13 +123,13 @@ const Tasks: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3 items-start">
+                <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-2 xl:grid-cols-3">
                     {columns.map((column, index) => (
                         <KanbanColumn
-                            key={column.title}
+                            key={index}
                             columnIndex={index}
                             title={column.title}
-                            tasks={column.tasks}
+                            tasks={column.tasks.filter((task) => filteredTasks.includes(task))}
                             columns={columns}
                             moveTask={moveTask}
                         />

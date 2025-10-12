@@ -147,7 +147,7 @@ const Categories: React.FC = () => {
                 </div>
 
                 {/* Grids de conteudo */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 w-[100%]  gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 w-[100%] items-start  gap-4">
                     {/* grid */}
                     <div className=" w-full p-4 rounded-md shadow-md">
                         <div className="flex items-center justify-between py-2">
