@@ -57,18 +57,23 @@ export interface Task {
     id: number;
     tag: string;
     tagColor?: string;
-    image?: string;
+    priority:string;
+    step: string;
     title: string;
     description: string;
-    date: string;
-    assignees?: string[];
-    comments?: number;
-    files?: number;
-    progress?: { current: number; total: number };
+    due_date: string;
+    category_id: string;
 }
 
 export type Category = {
     id: string
     name: string
     color: string
+}
+
+export type  SubMenuProps = {
+    title: string;
+    variant: "default" | "destructive" | "edit" | "copy";
+    icon: JSX.Element;
+    handleClick?: () => void;
 }

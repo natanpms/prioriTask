@@ -8,7 +8,7 @@ import AppLayout from "@/layouts/app-layout";
 import { BreadcrumbItem, Category, ResponseFlash } from "@/types";
 import { Head, useForm, usePage } from "@inertiajs/react";
 import { LoaderCircle } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { IoAddCircleOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { useDialog } from "@/hooks/use-dialog";
@@ -25,7 +25,7 @@ const Categories: React.FC = () => {
     ];
     const { props } = usePage();
     const response = props.flash as ResponseFlash;
-    const { data: createData, setData: setCreateData, reset: resetCreate, processing: processingCreate, errors: errorsCreate, post: postCreate } = useForm({
+    const { setData: setCreateData, reset: resetCreate, processing: processingCreate, errors: errorsCreate, post: postCreate } = useForm({
         'nome-categoria': '',
         'color': ''
     });

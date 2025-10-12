@@ -1,25 +1,77 @@
-import { Task } from "@/types";
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { formatDateToText, formatFirstLetterToUpperCase } from '@/lib/utils';
+import { Category, SubMenuProps, Task } from '@/types';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { usePage } from '@inertiajs/react';
+import { IoCopyOutline } from 'react-icons/io5';
+import { MdDelete, MdModeEdit } from 'react-icons/md';
+import { FaEdit } from 'react-icons/fa';
+import DropdownWrapper from './dropdown-wrapper';
 
 export const KanbanCard: React.FC<{ task: Task; id: string }> = ({ task, id }) => {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
-  const style = { transform: CSS.Transform.toString(transform), transition };
+    let bgColorPriority;
 
-  const tagColor = task.tagColor ?? "bg-purple-200 text-purple-800";
+    switch (task?.priority) {
+        case 'baixa':
+            bgColorPriority = '#008000';
+            break;
+        case 'media':
+            bgColorPriority = '#FFA500';
+            break;
+        case 'alta':
+            bgColorPriority = '#FF0000';
+            break;
+        default:
+            bgColorPriority = '#f1f1f1f';
+    }
 
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-      className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-lg hover:cursor-grab transition-shadow duration-300 p-4 space-y-3"
-    >
-      <span className={`text-xs font-semibold px-2 py-1 rounded-md ${tagColor}`}>{task.tag}</span>
-      <h3 className="font-bold text-gray-800">{task.title}</h3>
-      <p className="text-sm text-gray-500">{task.description}</p>
-      <p className="text-xs text-gray-400 font-medium">{task.date}</p>
-    </div>
-  );
+    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
+    const style = { transform: CSS.Transform.toString(transform), transition };
+
+    const { props } = usePage();
+    const categories = (props?.categories as Category[]) || [];
+
+    const categoryFiltered = categories.find((category) => category.id === task.category_id);
+    const tagColor = categoryFiltered?.color;
+
+    const subMenuOptions: SubMenuProps[] = [
+        { title: 'Copiar categoria', variant: 'copy', icon: <IoCopyOutline /> },
+        { title: 'Editar', variant: 'edit', icon: <MdModeEdit /> },
+        { title: 'Excluir', variant: 'destructive', icon: <MdDelete /> },
+    ];
+    
+    return (
+        <div
+            ref={setNodeRef}
+            style={style}
+            {...attributes}
+            {...listeners}
+            className="space-y-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-shadow duration-300 hover:cursor-grab hover:shadow-lg"
+        >
+            <div className="flex items-center justify-between">
+                <span
+                    className={`rounded-md px-2 py-1 text-sm font-semibold text-white`}
+                    style={{
+                        backgroundColor: tagColor,
+                    }}
+                >
+                    {categoryFiltered?.name}
+                </span>
+                <span
+                    className={`rounded-md px-2 py-1 text-sm font-semibold text-white`}
+                    style={{
+                        backgroundColor: bgColorPriority,
+                    }}
+                >
+                    {formatFirstLetterToUpperCase(task?.priority)}
+                </span>
+            </div>
+            <h3 className="font-bold text-gray-800">{formatFirstLetterToUpperCase(task.title)}</h3>
+            <p className="text-sm text-gray-500">{task.description}</p>
+            <div className="flex items-center justify-between">
+                <p className="text-xs font-medium text-gray-500">Vence em {formatDateToText(task.due_date)}</p>
+                    <DropdownWrapper iconPrincipal={<FaEdit className="h-4 w-4" />} subMenuOptions={subMenuOptions} />
+            </div>
+        </div>
+    );
 };

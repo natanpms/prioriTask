@@ -29,14 +29,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('tasks', function () {
           return Inertia::render('tasks', [
-            'tasks'=> Task::where('user_id', auth()->id())->select('title', 'description', 'priority', 'due_date', 'category_id')->get(),
+            'tasks'=> Task::where('user_id', auth()->id())->select('title', 'description', 'priority', 'step', 'due_date', 'category_id')->get(),
             'categories'=> Category::where('user_id', auth()->id())->select('id', 'name', 'color')->get()
         ]); 
     })->name('tasks');
 
     Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
-    Route::post('/tasks', [TaskController::class, 'destroy'])->name('tasks.destroy');
-    Route::post('/tasks', [TaskController::class, 'update'])->name('tasks.update');
+    Route::delete('/tasks', [TaskController::class, 'destroy'])->name('tasks.destroy');
+    Route::patch('/tasks', [TaskController::class, 'update'])->name('tasks.update');
 
 });
 
