@@ -34,6 +34,7 @@ const Tasks: React.FC = () => {
             { title: 'Em Progresso', tasks: tasks.filter((t) => t.step?.toLowerCase().includes('progresso')) },
             { title: 'Concluído', tasks: tasks.filter((t) => t.step?.toLowerCase().includes('concluido')) },
         ]);
+        setFilteredTasks(tasks);
     }, [tasks]);
 
     const { data, setData, reset, errors, post } = useForm({

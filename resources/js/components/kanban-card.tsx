@@ -3,10 +3,11 @@ import { Category, SubMenuProps, Task } from '@/types';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { usePage } from '@inertiajs/react';
+import { FaEdit } from 'react-icons/fa';
 import { IoCopyOutline } from 'react-icons/io5';
 import { MdDelete, MdModeEdit } from 'react-icons/md';
 import DropdownWrapper from './dropdown-wrapper';
-import { FaEdit } from 'react-icons/fa';
+import { toast } from 'sonner';
 
 export const KanbanCard: React.FC<{ task: Task; id: string }> = ({ task, id }) => {
     let bgColorPriority;
@@ -35,18 +36,26 @@ export const KanbanCard: React.FC<{ task: Task; id: string }> = ({ task, id }) =
     const tagColor = categoryFiltered?.color;
 
     const subMenuOptions: SubMenuProps[] = [
-        { title: 'Copiar categoria', variant: 'copy', icon: <IoCopyOutline /> },
-        { title: 'Editar', variant: 'edit', icon: <MdModeEdit /> },
-        { title: 'Excluir', variant: 'destructive', icon: <MdDelete /> },
+        {
+            title: 'Copiar categoria',
+            variant: 'copy',
+            icon: <IoCopyOutline />,
+            handleClick: () => {
+                navigator.clipboard.writeText(categoryFiltered?.name || '');
+                toast.success('Categoria copiada!');
+            },
+        },
+        { title: 'Editar', variant: 'edit', icon: <MdModeEdit />},
+        { title: 'Excluir', variant: 'destructive', icon: <MdDelete />},
     ];
-    
+
     return (
         <div
             ref={setNodeRef}
             style={style}
             {...attributes}
             {...listeners}
-            className="space-y-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-shadow duration-300 hover:cursor-grab hover:shadow-lg"
+            className="space-y-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm  hover:shadow-md transition-shadow cursor-pointer"
         >
             <div className="flex items-center justify-between">
                 <span
@@ -70,7 +79,9 @@ export const KanbanCard: React.FC<{ task: Task; id: string }> = ({ task, id }) =
             <p className="text-sm text-gray-500">{task.description}</p>
             <div className="flex items-center justify-between">
                 <p className="text-xs font-medium text-gray-500">Vence em {formatDateToText(task.due_date)}</p>
+                <div onPointerDown={(e) => e.stopPropagation()}>
                     <DropdownWrapper iconPrincipal={<FaEdit className="h-4 w-4" />} subMenuOptions={subMenuOptions} />
+                </div>
             </div>
         </div>
     );
