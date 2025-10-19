@@ -1,7 +1,7 @@
 import GridDashboard from '@/components/grid-dashboard';
 import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import AppLayout from '@/layouts/app-layout';
-import { filterTasksByStep } from '@/lib/utils';
+import { filterTasksByPriority, filterTasksByStep } from '@/lib/utils';
 import { Task, type BreadcrumbItem } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
 import { useEffect, useMemo, useState } from 'react';
@@ -38,41 +38,9 @@ export default function Dashboard() {
         setTasksFinished(finished);
     }, [tasks]);
 
-    const pendingData = useMemo(() => {
-        const low = tasksPending.filter((t) => t.priority === 'baixa').length;
-        const medium = tasksPending.filter((t) => t.priority === 'media').length;
-        const high = tasksPending.filter((t) => t.priority === 'alta').length;
-
-        return [
-            { priority: 'Baixa', Qtd: low, color: '#008000' },
-            { priority: 'Média', Qtd: medium, color: '#FFA500' },
-            { priority: 'Alta', Qtd: high, color: '#FF0000' },
-        ];
-    }, [tasksPending]);
-
-    const loadingData = useMemo(() => {
-        const low = tasksLoading.filter((t) => t.priority === 'baixa').length;
-        const medium = tasksLoading.filter((t) => t.priority === 'media').length;
-        const high = tasksLoading.filter((t) => t.priority === 'alta').length;
-
-        return [
-            { priority: 'Baixa', Qtd: low, color: '#008000' },
-            { priority: 'Média', Qtd: medium, color: '#FFA500' },
-            { priority: 'Alta', Qtd: high, color: '#FF0000' },
-        ];
-    }, [tasksLoading]);
-
-    const FinishData = useMemo(() => {
-        const low = tasksFinished.filter((t) => t.priority === 'baixa').length;
-        const medium = tasksFinished.filter((t) => t.priority === 'media').length;
-        const high = tasksFinished.filter((t) => t.priority === 'alta').length;
-
-        return [
-            { priority: 'Baixa', Qtd: low, color: '#008000' },
-            { priority: 'Média', Qtd: medium, color: '#FFA500' },
-            { priority: 'Alta', Qtd: high, color: '#FF0000' },
-        ];
-    }, [tasksFinished]);
+    const pendingData = useMemo(() => filterTasksByPriority(tasksPending), [tasksPending]);
+    const loadingData = useMemo(() => filterTasksByPriority(tasksLoading), [tasksLoading]);
+    const FinishData = useMemo(() => filterTasksByPriority(tasksFinished), [tasksFinished]);
 
     const gridOptions = [
         {
