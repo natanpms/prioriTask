@@ -1,4 +1,5 @@
 import { KanbanColumn } from '@/components/kanban-column';
+import { Button } from '@/components/ui/button';
 import { DialogWrapper } from '@/components/ui/dialog-wrapper';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -9,6 +10,8 @@ import { BreadcrumbItem, Category, ColumnTask, ResponseFlash, Task } from '@/typ
 import { Head, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { FaPlus, FaSearch } from 'react-icons/fa';
+import { IoWarning } from 'react-icons/io5';
+import { MdDelete } from 'react-icons/md';
 import { toast } from 'sonner';
 
 const Tasks: React.FC = () => {
@@ -37,7 +40,7 @@ const Tasks: React.FC = () => {
         setFilteredTasks(tasks);
     }, [tasks]);
 
-    const { data, setData, reset, errors, post , processing} = useForm({
+    const { data, setData, reset, errors, post, processing } = useForm({
         title: '',
         description: '',
         priority: '',
@@ -111,15 +114,43 @@ const Tasks: React.FC = () => {
                                 <FaSearch />
                             </div>
                         </div>
-                        <div className="flex w-auto justify-start">
-                            <button
-                                type="button"
-                                className="flex w-full cursor-pointer items-center space-x-2 rounded-md border-2 border-primary bg-white p-1 text-primary transition-transform duration-200 hover:scale-105 sm:w-1/4 md:w-full"
-                                onClick={() => onOpen()}
-                            >
-                                <FaPlus size={14} />
-                                <span className="text-center">Adicionar</span>
-                            </button>
+                        <div className={`flex w-full justify-start gap-2 py-2 md:py-0 ${tasks.length > 0 ? 'lg:w-1/3' : 'lg:w-auto'} `}>
+                            {categories.length > 0 ? (
+                                <button
+                                    type="button"
+                                    className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-md border-2 border-primary bg-white p-1 text-primary transition-transform duration-200 hover:scale-105 sm:w-1/4 md:w-full"
+                                    onClick={() => onOpen()}
+                                >
+                                    <FaPlus size={14} />
+                                    <span>Adicionar</span>
+                                </button>
+                            ) : (
+                                <div className="flex items-center justify-center">
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        onClick={() => {
+                                            toast.error('Informação importante!', {
+                                                description: 'Você precisa criar uma categoria antes de adicionar uma task.',
+                                               
+                                            });
+                                        }}
+                                    >
+                                        <IoWarning />
+                                    </Button>
+                                </div>
+                            )}
+
+                            {tasks.length > 0 && (
+                                <button
+                                    type="button"
+                                    className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-md border-2 border-destructive bg-white p-1 text-destructive transition-transform duration-200 hover:scale-105 sm:w-1/4 md:w-full"
+                                    onClick={() => {}}
+                                >
+                                    <MdDelete size={14} />
+                                    <span>Excluir tasks</span>
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>
