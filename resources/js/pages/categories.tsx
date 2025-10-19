@@ -8,7 +8,7 @@ import AppLayout from "@/layouts/app-layout";
 import { BreadcrumbItem, Category, ResponseFlash } from "@/types";
 import { Head, useForm, usePage } from "@inertiajs/react";
 import { LoaderCircle } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoAddCircleOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { useDialog } from "@/hooks/use-dialog";
@@ -135,6 +135,10 @@ const Categories: React.FC = () => {
         }
 
     }
+
+    useEffect(() => {
+            setFilteredCategory(props.categories as Category[]);
+        }, [props.categories]);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>

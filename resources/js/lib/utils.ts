@@ -1,3 +1,4 @@
+import { Task } from '@/types';
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -28,4 +29,8 @@ export function formatFirstLetterToUpperCase(text: string): string {
     if (!text) return '';
     
     return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+export function filterTasksByStep(tasks: Task[], stepKeyword: string) {
+    return tasks.filter((t) => t.step?.toLowerCase().includes(stepKeyword.toLowerCase()));
 }

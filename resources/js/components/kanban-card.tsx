@@ -1,15 +1,15 @@
 import { formatDateToText, formatFirstLetterToUpperCase } from '@/lib/utils';
-import { Category, SubMenuProps, Task } from '@/types';
+import { Category, ResponseFlash, SubMenuProps, Task } from '@/types';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { usePage } from '@inertiajs/react';
+import { useForm, usePage } from '@inertiajs/react';
 import { FaEdit } from 'react-icons/fa';
 import { IoCopyOutline } from 'react-icons/io5';
 import { MdDelete, MdModeEdit } from 'react-icons/md';
 import DropdownWrapper from './dropdown-wrapper';
 import { toast } from 'sonner';
 
-export const KanbanCard: React.FC<{ task: Task; id: string }> = ({ task, id }) => {
+export const KanbanCard: React.FC<{ task: Task; id: number }> = ({ task, id }) => {
     let bgColorPriority;
 
     switch (task?.priority) {
@@ -28,12 +28,30 @@ export const KanbanCard: React.FC<{ task: Task; id: string }> = ({ task, id }) =
 
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
     const style = { transform: CSS.Transform.toString(transform), transition };
-
+    const { delete: deleteTask } = useForm({});
     const { props } = usePage();
+    const response = props.flash as ResponseFlash;
     const categories = (props?.categories as Category[]) || [];
 
     const categoryFiltered = categories.find((category) => category.id === task.category_id);
     const tagColor = categoryFiltered?.color;
+
+    const handleDeleteTask = (taskId: number) => {
+        if(!taskId){
+            return toast.error("Falha ao encontrar taskId.");
+        }
+
+        deleteTask(route('tasks.destroy', taskId), {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast.success(response.success || "task excluída!");
+            },
+            onError: (error) => {
+                toast.error("Erro ao excluir task:" + error);
+            }
+        });
+    }
+    
 
     const subMenuOptions: SubMenuProps[] = [
         {
@@ -46,7 +64,7 @@ export const KanbanCard: React.FC<{ task: Task; id: string }> = ({ task, id }) =
             },
         },
         { title: 'Editar', variant: 'edit', icon: <MdModeEdit />},
-        { title: 'Excluir', variant: 'destructive', icon: <MdDelete />},
+        { title: 'Excluir', variant: 'destructive', icon: <MdDelete />, handleClick: () => handleDeleteTask(task.id) },
     ];
 
     return (

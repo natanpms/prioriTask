@@ -31,13 +31,13 @@ const Tasks: React.FC = () => {
     useEffect(() => {
         setColumns([
             { title: 'Pendente', tasks: tasks.filter((t) => t.step?.toLowerCase().includes('pendente')) },
-            { title: 'Em Progresso', tasks: tasks.filter((t) => t.step?.toLowerCase().includes('progresso')) },
+            { title: 'Em Progresso', tasks: tasks.filter((t) => t.step?.toLowerCase().includes('andamento')) },
             { title: 'Concluído', tasks: tasks.filter((t) => t.step?.toLowerCase().includes('concluido')) },
         ]);
         setFilteredTasks(tasks);
     }, [tasks]);
 
-    const { data, setData, reset, errors, post } = useForm({
+    const { data, setData, reset, errors, post , processing} = useForm({
         title: '',
         description: '',
         priority: '',
@@ -143,6 +143,7 @@ const Tasks: React.FC = () => {
                         isOpen={isOpen}
                         onClose={onClose}
                         buttonText={'Confirmar alterações'}
+                        processing={processing}
                         handleClick={() => formRef.current?.requestSubmit()}
                     >
                         <form ref={formRef} onSubmit={handleNewTask} className="space-y-4">

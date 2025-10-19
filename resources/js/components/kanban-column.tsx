@@ -34,7 +34,7 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({ title, tasks, column
                 <SortableContext items={tasks.map((task) => `${columnIndex}-${task.id}`)} strategy={verticalListSortingStrategy}>
                     <div className="scrollbar-thin scrollbar-thumb-primary scrollbar-track-transparent max-h-[50vh] space-y-4 overflow-y-auto lg:max-h-[75vh]">
                         {tasks.map((task, index) => (
-                            <KanbanCard key={index} task={task} id={`${columnIndex}-${task.id}`} />
+                            <KanbanCard key={index} task={task} id={task?.id} />
                         ))}
                     </div>
                 </SortableContext>
