@@ -7,7 +7,6 @@ import { Head, usePage } from '@inertiajs/react';
 import { useEffect, useMemo, useState } from 'react';
 import { FaClockRotateLeft } from 'react-icons/fa6';
 import { GrInProgress } from 'react-icons/gr';
-import { MdOutlineTaskAlt } from 'react-icons/md';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -19,28 +18,21 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function Dashboard() {
     const { props } = usePage();
 
-    const tasks = useMemo(() => {
-        return (props?.tasks as Task[]) || [];
-    }, [props.tasks]);
+    const tasks = useMemo(() => (props?.tasks as Task[]) || [] , [props.tasks]);
 
     const [tasksPending, setTasksPending] = useState<Task[]>([]);
     const [tasksLoading, setTasksLoading] = useState<Task[]>([]);
-    const [tasksFinished, setTasksFinished] = useState<Task[]>([]);
 
     useEffect(() => {
         const pending = filterTasksByStep(tasks, 'pendente');
-        setTasksPending(pending);
-
         const loadingTask = filterTasksByStep(tasks, 'andamento');
-        setTasksLoading(loadingTask);
 
-        const finished = filterTasksByStep(tasks, 'concluido');
-        setTasksFinished(finished);
+        setTasksPending(pending);
+        setTasksLoading(loadingTask);
     }, [tasks]);
 
     const pendingData = useMemo(() => filterTasksByPriority(tasksPending), [tasksPending]);
     const loadingData = useMemo(() => filterTasksByPriority(tasksLoading), [tasksLoading]);
-    const FinishData = useMemo(() => filterTasksByPriority(tasksFinished), [tasksFinished]);
 
     const gridOptions = [
         {
@@ -48,29 +40,22 @@ export default function Dashboard() {
             title: 'Tarefas Pendentes',
             count: tasksPending.length,
             data: pendingData,
-            icon: <FaClockRotateLeft className="text-black/40" />,
+            icon: <FaClockRotateLeft className="text-primary/40" />,
         },
         {
             type: 'loading',
             title: 'Tarefas em Andamento',
             count: tasksLoading.length,
             data: loadingData,
-            icon: <GrInProgress className="text-black/40" />,
-        },
-        {
-            type: 'finished',
-            title: 'Tarefas concluídas',
-            count: tasksFinished.length,
-            data: FinishData,
-            icon: <MdOutlineTaskAlt className="text-black/40" />,
-        },
+            icon: <GrInProgress className="text-primary/40" />,
+        }
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+                <div className="grid auto-rows-min gap-4 md:grid-cols-2">
                     {gridOptions?.map((grid, index) => (
                         <GridDashboard key={index} type={grid.type} title={grid.title} tasksCount={grid.count} tasks={grid.data} icon={grid.icon} />
                     ))}
