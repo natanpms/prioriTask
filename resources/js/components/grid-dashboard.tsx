@@ -34,7 +34,7 @@ const GridDashboard: React.FC<GridProps> = ({ type, title, tasksCount, tasks, ic
 
         return (
             <div>
-                <ResponsiveContainer width="100%" height={180}>
+                <ResponsiveContainer width="100%" height={170}>
                     <BarChart data={tasks}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="priority" />

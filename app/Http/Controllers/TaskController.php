@@ -46,4 +46,24 @@ class TaskController extends Controller
                 ->with('error', 'Erro ao deletar task: '.$th->getMessage());
         }
     }
+
+    public function update(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|exists:tasks,id',
+            'step' => ['required', Rule::enum(TaskStep::class)],
+        ]);
+
+        $task = Task::find($request->id);
+
+        if ($task->user_id !== auth()->id()) {
+             return redirect()->route('tasks')
+                ->with('error', 'Você não tem permissão para editar essa task.');
+        }
+
+        $task->step = $request->step;
+        $task->save();
+
+        return redirect()->route('tasks')->with('success', 'Task atualizada com sucesso!');
+    }
 }

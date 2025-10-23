@@ -63,7 +63,7 @@ export default function Dashboard() {
                         <Download />
                     </Button>
                 </div>
-                <div className="grid auto-rows-min gap-4 md:grid-cols-2">
+                <div className="grid auto-rows-min gap-4 md:grid-cols-2 h-auto">
                     {gridOptions?.map((grid, index) => (
                         <GridDashboard key={index} type={grid.type} title={grid.title} tasksCount={grid.count} tasks={grid.data} icon={grid.icon} />
                     ))}

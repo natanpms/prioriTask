@@ -5,7 +5,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { useForm, usePage } from '@inertiajs/react';
 import { FaEdit } from 'react-icons/fa';
 import { IoCopyOutline } from 'react-icons/io5';
-import { MdDelete, MdModeEdit } from 'react-icons/md';
+import { MdDelete } from 'react-icons/md';
 import DropdownWrapper from './dropdown-wrapper';
 import { toast } from 'sonner';
 
@@ -63,7 +63,7 @@ export const KanbanCard: React.FC<{ task: Task; id: number }> = ({ task, id }) =
                 toast.success('Categoria copiada!');
             },
         },
-        { title: 'Editar', variant: 'edit', icon: <MdModeEdit />},
+        // { title: 'Editar', variant: 'edit', icon: <MdModeEdit />},
         { title: 'Excluir', variant: 'destructive', icon: <MdDelete />, handleClick: () => handleDeleteTask(task.id) },
     ];
 
@@ -73,7 +73,7 @@ export const KanbanCard: React.FC<{ task: Task; id: number }> = ({ task, id }) =
             style={style}
             {...attributes}
             {...listeners}
-            className="space-y-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm  hover:shadow-md transition-shadow cursor-pointer"
+            className={`space-y-3 rounded-lg border border-gray-200 ${task?.step === 'concluido' ? 'bg-white/85' : 'bg-white'}  p-4 shadow-sm  hover:shadow-md transition-shadow cursor-pointer`}
         >
             <div className="flex items-center justify-between">
                 <span

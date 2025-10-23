@@ -1,3 +1,4 @@
+import { KanbanCard } from '@/components/kanban-card';
 import { KanbanColumn } from '@/components/kanban-column';
 import { Button } from '@/components/ui/button';
 import { DialogWrapper } from '@/components/ui/dialog-wrapper';
@@ -5,19 +6,20 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useDialog } from '@/hooks/use-dialog';
+// import { useIsMobile } from '@/hooks/use-mobile';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem, Category, ColumnTask, ResponseFlash, Task } from '@/types';
-import { Head, useForm, usePage } from '@inertiajs/react';
+import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, closestCenter } from '@dnd-kit/core';
+import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { FaPlus, FaSearch } from 'react-icons/fa';
 import { IoWarning } from 'react-icons/io5';
-import { MdDelete } from 'react-icons/md';
 import { toast } from 'sonner';
 
 const Tasks: React.FC = () => {
     const formRef = useRef<HTMLFormElement>(null);
     const { props } = usePage();
-  
+    // const isMobile = useIsMobile();
     const categories = (props?.categories as Category[]) || [];
     const tasks = useMemo(() => {
         return (props?.tasks as Task[]) || [];
@@ -29,13 +31,19 @@ const Tasks: React.FC = () => {
         { title: 'Concluído', tasks: [] },
     ]);
 
+    const [activeTask, setActiveTask] = useState<Task | null>(null);
+
     const [filteredTasks, setFilteredTasks] = useState<Task[]>(tasks);
 
     useEffect(() => {
+        const pendente = tasks.filter((t) => t.step?.toLowerCase().includes('pendente'));
+        const emProgresso = tasks.filter((t) => t.step?.toLowerCase().includes('andamento'));
+        const concluido = tasks.filter((t) => t.step?.toLowerCase().includes('concluido'));
+
         setColumns([
-            { title: 'Pendente', tasks: tasks.filter((t) => t.step?.toLowerCase().includes('pendente')) },
-            { title: 'Em Progresso', tasks: tasks.filter((t) => t.step?.toLowerCase().includes('andamento')) },
-            { title: 'Concluído', tasks: tasks.filter((t) => t.step?.toLowerCase().includes('concluido')) },
+            { title: 'Pendente', tasks: pendente },
+            { title: 'Em Progresso', tasks: emProgresso },
+            { title: 'Concluído', tasks: concluido },
         ]);
         setFilteredTasks(tasks);
     }, [tasks]);
@@ -44,7 +52,7 @@ const Tasks: React.FC = () => {
         title: '',
         description: '',
         priority: '',
-        step: 'pendente',
+        step: 'pendente' as 'pendente' | 'andamento' | 'concluido',
         category_id: '',
         due_date: '',
     });
@@ -53,16 +61,53 @@ const Tasks: React.FC = () => {
     const { onOpen, onClose, isOpen } = useDialog();
     const response = props.flash as ResponseFlash;
 
-    // Função para mover task entre colunas
-    const moveTask = (taskId: number, fromColumnIndex: number, toColumnIndex: number, toTaskIndex: number) => {
-        if (fromColumnIndex === toColumnIndex) return;
+    const handleDragStart = (event: DragStartEvent) => {
+        const { active } = event;
+        const task = tasks.find((t) => t.id === active.id);
+        if (task) {
+            setActiveTask(task);
+        }
+    };
 
-        const newColumns = [...columns];
-        const taskIndex = newColumns[fromColumnIndex].tasks.findIndex((t) => t.id === taskId);
-        const [task] = newColumns[fromColumnIndex].tasks.splice(taskIndex, 1);
+    const handleDragEnd = (event: DragEndEvent) => {
+        setActiveTask(null);
+        const { active, over } = event;
 
-        newColumns[toColumnIndex].tasks.splice(toTaskIndex, 0, task);
-        setColumns(newColumns);
+        if (!over || active.id === over.id) {
+            return;
+        }
+
+        const originalTask = tasks.find((task) => task.id === active.id);
+        const overColumn = columns.find((col) => col.title === over.id || col.tasks.some((t) => t.id === over.id));
+
+        if (originalTask && overColumn) {
+            let newStep: 'pendente' | 'andamento' | 'concluido' = 'pendente';
+            if (overColumn.title === 'Em Progresso') {
+                newStep = 'andamento';
+            } else if (overColumn.title === 'Concluído') {
+                newStep = 'concluido';
+            }
+
+            if (originalTask.step === newStep) {
+                return;
+            }
+
+            router.patch(
+                route('tasks.update'),
+                {
+                    id: originalTask.id,
+                    step: newStep,
+                },
+                {
+                    onSuccess: () => {
+                        toast.success('Task movida com sucesso!');
+                    },
+                    onError: (error) => {
+                        toast.error('Erro ao mover task: ' + JSON.stringify(error));
+                    },
+                },
+            );
+        }
     };
 
     const handleNewTask = (e: React.FormEvent<HTMLFormElement>) => {
@@ -97,6 +142,7 @@ const Tasks: React.FC = () => {
         setFilteredTasks(filtered);
     };
 
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Tasks" />
@@ -114,7 +160,7 @@ const Tasks: React.FC = () => {
                                 <FaSearch />
                             </div>
                         </div>
-                        <div className={`flex w-full justify-start gap-2 py-2 md:py-0 ${tasks.length > 0 ? 'lg:w-1/3' : 'lg:w-auto'} `}>
+                        <div className={`flex w-full justify-start gap-2 py-2 md:py-0 ${tasks.length > 0 ? 'lg:w-1/5' : 'lg:w-auto'} `}>
                             {categories.length > 0 ? (
                                 <button
                                     type="button"
@@ -132,7 +178,6 @@ const Tasks: React.FC = () => {
                                         onClick={() => {
                                             toast.error('Informação importante!', {
                                                 description: 'Você precisa criar uma categoria antes de adicionar uma task.',
-                                               
                                             });
                                         }}
                                     >
@@ -140,32 +185,23 @@ const Tasks: React.FC = () => {
                                     </Button>
                                 </div>
                             )}
-
-                            {tasks.length > 0 && (
-                                <button
-                                    type="button"
-                                    className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-md border-2 border-destructive bg-white p-1 text-destructive transition-transform duration-200 hover:scale-105 sm:w-1/4 md:w-full"
-                                    onClick={() => {}}
-                                >
-                                    <MdDelete size={14} />
-                                    <span>Excluir tasks</span>
-                                </button>
-                            )}
+                            ''
                         </div>
                     </div>
                 </div>
-
                 <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-2 xl:grid-cols-3">
-                    {columns.map((column, index) => (
-                        <KanbanColumn
-                            key={index}
-                            columnIndex={index}
-                            title={column.title}
-                            tasks={column.tasks.filter((task) => filteredTasks.includes(task))}
-                            columns={columns}
-                            moveTask={moveTask}
-                        />
-                    ))}
+                    <DndContext collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+                        {columns.map((column, index) => (
+                            <KanbanColumn
+                                key={index}
+                                id={column.title}
+                                title={column.title}
+                                tasks={column.tasks.filter((task) => filteredTasks.includes(task))}
+                                activeTask={activeTask}
+                            />
+                        ))}
+                        <DragOverlay>{activeTask ? <KanbanCard task={activeTask} id={activeTask.id} /> : null}</DragOverlay>
+                    </DndContext>
                 </div>
 
                 {isOpen && (
