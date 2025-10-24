@@ -9,6 +9,8 @@ import { MdDelete } from 'react-icons/md';
 import { RiDraggable } from 'react-icons/ri';
 import { toast } from 'sonner';
 import DropdownWrapper from './dropdown-wrapper';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsTablet } from '@/hooks/use-tablet';
 
 interface KanbanCardProps {
     task: Task;
@@ -40,7 +42,8 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ task, id }) => {
     const categories = (props?.categories as Category[]) || [];
     const isDuePast = verifyIfDateIsPastDue(task.due_date);
     const textDuePast = isDuePast ? 'Venceu' : 'Vence';
-
+    const isMobile = useIsMobile();
+    const isTablet = useIsTablet();
     const categoryFiltered = categories.find((category) => category.id === task.category_id);
     const tagColor = categoryFiltered?.color;
 
@@ -79,7 +82,7 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ task, id }) => {
             ref={setNodeRef}
             style={style}
             {...attributes}
-            className={`space-y-3 rounded-lg border border-gray-200 ${task?.step === 'concluido' ? 'bg-white/85' : 'bg-white'} cursor-pointer p-4 shadow-sm transition-shadow hover:shadow-md`}
+            className={`space-y-3 rounded-lg border border-gray-200 ${task?.step === 'concluido' ? 'bg-white/70' : 'bg-white'} cursor-pointer p-4 shadow-sm transition-shadow hover:shadow-md`}
         >
             <div className="flex items-center justify-between">
                 <div className="space-x-2">
@@ -100,9 +103,11 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ task, id }) => {
                         {formatFirstLetterToUpperCase(task?.priority)}
                     </span>
                 </div>
-                <div {...listeners} onClick={(e) => e.stopPropagation()} className="cursor-move p-2">
-                    <RiDraggable />
-                </div>
+                {(task.step !== 'concluido' && (!isMobile && !isTablet)) && (
+                    <div {...listeners} onClick={(e) => e.stopPropagation()} className="cursor-move p-2">
+                        <RiDraggable />
+                    </div>
+                )}
             </div>
             <h3 className="font-bold text-gray-800">{formatFirstLetterToUpperCase(task.title)}</h3>
             <p className="text-sm text-gray-500">{task.description}</p>
@@ -116,6 +121,7 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ task, id }) => {
                     </div>
                 </div>
             </div>
+
         </div>
     );
 };
