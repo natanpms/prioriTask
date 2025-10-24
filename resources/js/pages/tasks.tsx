@@ -188,7 +188,7 @@ const Tasks: React.FC = () => {
                         </div>
                     </div>
                 </div>
-                <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-2 xl:grid-cols-3">
+                <div className="grid grid-cols-1 items-start gap-3 md:grid-cols-2 xl:grid-cols-3">
                     <DndContext collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
                         {columns.map((column, index) => (
                             <KanbanColumn

@@ -1,6 +1,6 @@
 import GridDashboard from '@/components/grid-dashboard';
+import GridDashboardDone from '@/components/grid-dashboard-done';
 import { Button } from '@/components/ui/button';
-import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import AppLayout from '@/layouts/app-layout';
 import { filterTasksByPriority, filterTasksByStep } from '@/lib/utils';
 import { Task, type BreadcrumbItem } from '@/types';
@@ -69,7 +69,7 @@ export default function Dashboard() {
                     ))}
                 </div>
                 <div className="relative min-h-[100vh] flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
-                    <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
+                    <GridDashboardDone />
                 </div>
             </div>
         </AppLayout>
