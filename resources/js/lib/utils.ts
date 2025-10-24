@@ -46,3 +46,16 @@ export function filterTasksByPriority(tasks: Task[]) {
         { priority: 'Alta', Qtd: high, color: '#FF0000' },
     ];
 }
+
+// valida se uma data ja passou da data atual
+export function verifyIfDateIsPastDue(date: string | Date): boolean {
+    const dueDate = new Date(date);
+    const currentDate = new Date();
+
+    // seta que o ultimo horario do dia seria 23:59:59 para comparar apenas a data
+    dueDate.setHours(23, 59, 59, 999);
+    currentDate.setHours(23, 59, 59, 999);
+   
+
+    return dueDate < currentDate;
+}

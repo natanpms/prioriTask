@@ -1,4 +1,4 @@
-import { formatDateToText, formatFirstLetterToUpperCase } from '@/lib/utils';
+import { formatDateToText, formatFirstLetterToUpperCase, verifyIfDateIsPastDue } from '@/lib/utils';
 import { Category, ResponseFlash, SubMenuProps, Task } from '@/types';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -6,10 +6,16 @@ import { useForm, usePage } from '@inertiajs/react';
 import { FaEdit } from 'react-icons/fa';
 import { IoCopyOutline } from 'react-icons/io5';
 import { MdDelete } from 'react-icons/md';
-import DropdownWrapper from './dropdown-wrapper';
+import { RiDraggable } from 'react-icons/ri';
 import { toast } from 'sonner';
+import DropdownWrapper from './dropdown-wrapper';
 
-export const KanbanCard: React.FC<{ task: Task; id: number }> = ({ task, id }) => {
+interface KanbanCardProps {
+    task: Task;
+    id: number;
+}
+
+export const KanbanCard: React.FC<KanbanCardProps> = ({ task, id }) => {
     let bgColorPriority;
 
     switch (task?.priority) {
@@ -32,26 +38,27 @@ export const KanbanCard: React.FC<{ task: Task; id: number }> = ({ task, id }) =
     const { props } = usePage();
     const response = props.flash as ResponseFlash;
     const categories = (props?.categories as Category[]) || [];
+    const isDuePast = verifyIfDateIsPastDue(task.due_date);
+    const textDuePast = isDuePast ? 'Venceu' : 'Vence';
 
     const categoryFiltered = categories.find((category) => category.id === task.category_id);
     const tagColor = categoryFiltered?.color;
 
     const handleDeleteTask = (taskId: number) => {
-        if(!taskId){
-            return toast.error("Falha ao encontrar taskId.");
+        if (!taskId) {
+            return toast.error('Falha ao encontrar taskId.');
         }
 
         deleteTask(route('tasks.destroy', taskId), {
             preserveScroll: true,
             onSuccess: () => {
-                toast.success(response.success || "task excluída!");
+                toast.success(response.success || 'task excluída!');
             },
             onError: (error) => {
-                toast.error("Erro ao excluir task:" + error);
-            }
+                toast.error('Erro ao excluir task:' + error);
+            },
         });
-    }
-    
+    };
 
     const subMenuOptions: SubMenuProps[] = [
         {
@@ -63,7 +70,7 @@ export const KanbanCard: React.FC<{ task: Task; id: number }> = ({ task, id }) =
                 toast.success('Categoria copiada!');
             },
         },
-        // { title: 'Editar', variant: 'edit', icon: <MdModeEdit />},
+        // { title: 'Editar', variant: 'edit', icon: <MdModeEdit />, handleClick: () => onEdit(task) },
         { title: 'Excluir', variant: 'destructive', icon: <MdDelete />, handleClick: () => handleDeleteTask(task.id) },
     ];
 
@@ -72,33 +79,41 @@ export const KanbanCard: React.FC<{ task: Task; id: number }> = ({ task, id }) =
             ref={setNodeRef}
             style={style}
             {...attributes}
-            {...listeners}
-            className={`space-y-3 rounded-lg border border-gray-200 ${task?.step === 'concluido' ? 'bg-white/85' : 'bg-white'}  p-4 shadow-sm  hover:shadow-md transition-shadow cursor-pointer`}
+            className={`space-y-3 rounded-lg border border-gray-200 ${task?.step === 'concluido' ? 'bg-white/85' : 'bg-white'} cursor-pointer p-4 shadow-sm transition-shadow hover:shadow-md`}
         >
             <div className="flex items-center justify-between">
-                <span
-                    className={`rounded-md px-2 py-1 text-sm font-semibold text-white`}
-                    style={{
-                        backgroundColor: tagColor,
-                    }}
-                >
-                    {categoryFiltered?.name}
-                </span>
-                <span
-                    className={`rounded-md px-2 py-1 text-sm font-semibold text-white`}
-                    style={{
-                        backgroundColor: bgColorPriority,
-                    }}
-                >
-                    {formatFirstLetterToUpperCase(task?.priority)}
-                </span>
+                <div className="space-x-2">
+                    <span
+                        className={`rounded-md px-2 py-1 text-sm font-semibold text-white`}
+                        style={{
+                            backgroundColor: tagColor,
+                        }}
+                    >
+                        {categoryFiltered?.name}
+                    </span>
+                    <span
+                        className={`rounded-md px-2 py-1 text-sm font-semibold text-white`}
+                        style={{
+                            backgroundColor: bgColorPriority,
+                        }}
+                    >
+                        {formatFirstLetterToUpperCase(task?.priority)}
+                    </span>
+                </div>
+                <div {...listeners} onClick={(e) => e.stopPropagation()} className="cursor-move p-2">
+                    <RiDraggable />
+                </div>
             </div>
             <h3 className="font-bold text-gray-800">{formatFirstLetterToUpperCase(task.title)}</h3>
             <p className="text-sm text-gray-500">{task.description}</p>
             <div className="flex items-center justify-between">
-                <p className="text-xs font-medium text-gray-500">Vence em {formatDateToText(task.due_date)}</p>
-                <div onPointerDown={(e) => e.stopPropagation()}>
-                    <DropdownWrapper iconPrincipal={<FaEdit className="h-4 w-4" />} subMenuOptions={subMenuOptions} />
+                <p className={`text-xs font-medium ${isDuePast ? 'text-red-500' : 'text-gray-500'} `}>
+                    {textDuePast} em {formatDateToText(task.due_date)}
+                </p>
+                <div className="flex items-center gap-2">
+                    <div onClick={(e) => e.stopPropagation()}>
+                        <DropdownWrapper iconPrincipal={<FaEdit className="h-4 w-4" />} subMenuOptions={subMenuOptions} />
+                    </div>
                 </div>
             </div>
         </div>

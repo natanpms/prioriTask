@@ -185,7 +185,6 @@ const Tasks: React.FC = () => {
                                     </Button>
                                 </div>
                             )}
-                            ''
                         </div>
                     </div>
                 </div>
