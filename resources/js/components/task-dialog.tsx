@@ -4,17 +4,18 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { Textarea } from '@/components/ui/textarea';
 import { Category, ResponseFlash, Task } from '@/types';
 import { useForm, usePage } from '@inertiajs/react';
-import { useRef, useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { toast } from 'sonner';
+import Combobox from './combobox';
 
 interface TaskDialogProps {
     isOpen: boolean;
-    onClose: () => void;
+    onCloseDlg: () => void;
     task?: Task | null;
     categories: Category[];
 }
 
-export const TaskDialog: React.FC<TaskDialogProps> = ({ isOpen, onClose, task, categories }) => {
+export const TaskDialog: React.FC<TaskDialogProps> = ({ isOpen, onCloseDlg, task, categories }) => {
     const formRef = useRef<HTMLFormElement>(null);
     const { props } = usePage();
     const response = props.flash as ResponseFlash;
@@ -54,7 +55,7 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({ isOpen, onClose, task, c
             preserveScroll: true,
             onSuccess: () => {
                 reset();
-                onClose();
+                onCloseDlg();
                 toast.success(response.success || `Task ${task ? 'atualizada' : 'criada'} com sucesso!`);
             },
             onError: () => {
@@ -73,7 +74,7 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({ isOpen, onClose, task, c
         <DialogWrapper
             title={task ? 'Editar Task' : 'Adicionar Task'}
             isOpen={isOpen}
-            onClose={onClose}
+            onClose={onCloseDlg}
             buttonText={task ? 'Confirmar alterações' : 'Adicionar'}
             processing={processing}
             handleClick={() => formRef.current?.requestSubmit()}
@@ -105,45 +106,57 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({ isOpen, onClose, task, c
                 <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2">
                     <div>
                         <label className="mb-1 block font-semibold text-gray-700">Prioridade</label>
-                        <Select name="priority" value={data.priority} onValueChange={(value) => setData('priority', value)} required>
-                            <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Selecione a prioridade" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectGroup>
-                                    <SelectItem value="baixa">Baixa</SelectItem>
-                                    <SelectItem value="media">Média</SelectItem>
-                                    <SelectItem value="alta">Alta</SelectItem>
-                                </SelectGroup>
-                            </SelectContent>
-                        </Select>
+                        <Combobox
+                            name="priority"
+                            groupOptions={[
+                                {
+                                    value: 'baixa',
+                                    label: 'Baixa',
+                                },
+                                {
+                                    value: 'media',
+                                    label: 'Média',
+                                },
+                                {
+                                    value: 'alta',
+                                    label: 'Alta',
+                                },
+                            ]}
+                            value={data.priority}
+                            onChange={(value) => setData('priority', value)}
+                            textPlaceholder="Selecione a prioridade"
+                            isRequired
+                        />
                     </div>
                     <div>
                         <label className="mb-1 block font-semibold text-gray-700">Status</label>
-                        <Select name="step" value={data.step} onValueChange={(value) => setData('step', value as 'pendente' | 'andamento' | 'concluido')}>
-                            <SelectTrigger className="w-full">
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectGroup>
-                                    <SelectItem value="pendente">Pendente</SelectItem>
-                                    <SelectItem value="andamento">Em Progresso</SelectItem>
-                                    <SelectItem value="concluido">Concluído</SelectItem>
-                                </SelectGroup>
-                            </SelectContent>
-                        </Select>
+                        <Combobox
+                            name="step"
+                            defaultValue="pendente"
+                            groupOptions={[
+                                  {
+                                    value: 'pendente',
+                                    label: 'Pendente',
+                                },
+                                {
+                                    value: 'andamento',
+                                    label: 'Em Progresso',
+                                },
+                                {
+                                    value: 'concluido',
+                                    label: 'Concluído',
+                                },
+                            ]}
+                            value={data.step}
+                            onChange={(value) => setData('step', value as 'pendente' | 'andamento' | 'concluido')}
+                        />
                     </div>
                 </div>
 
                 <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2">
                     <div>
                         <label className="mb-2 block font-semibold text-gray-700">Categoria</label>
-                        <Select
-                            name="category_id"
-                            value={data.category_id}
-                            onValueChange={(value) => setData('category_id', value)}
-                            required
-                        >
+                        <Select name="category_id" value={data.category_id} onValueChange={(value) => setData('category_id', value)} required>
                             <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Selecione a categoria" />
                             </SelectTrigger>

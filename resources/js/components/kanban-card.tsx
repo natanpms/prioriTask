@@ -1,3 +1,4 @@
+import { useDialog } from '@/hooks/use-dialog';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useIsTablet } from '@/hooks/use-tablet';
 import { formatDateToText, formatFirstLetterToUpperCase, verifyIfDateIsPastDue } from '@/lib/utils';
@@ -14,14 +15,14 @@ import { RiDraggable } from 'react-icons/ri';
 import { toast } from 'sonner';
 import Combobox from './combobox';
 import DropdownWrapper from './dropdown-wrapper';
+import { TaskDialog } from './task-dialog';
 
 interface KanbanCardProps {
     task: Task;
     id: number;
-    onEdit: (task: Task) => void;
 }
 
-export const KanbanCard: React.FC<KanbanCardProps> = ({ task, id, onEdit }) => {
+export const KanbanCard: React.FC<KanbanCardProps> = ({ task, id }) => {
     let bgColorPriority;
 
     switch (task?.priority) {
@@ -50,6 +51,7 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ task, id, onEdit }) => {
     const isTablet = useIsTablet();
     const categoryFiltered = categories.find((category) => category.id === task.category_id);
     const tagColor = categoryFiltered?.color;
+    const { onOpen, onClose, isOpen } = useDialog();
 
     const handleDeleteTask = (taskId: number) => {
         if (!taskId) {
@@ -104,7 +106,7 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ task, id, onEdit }) => {
             style={style}
             {...attributes}
             className={`space-y-3 rounded-lg border border-gray-200 ${task?.step === 'concluido' ? 'bg-white/70' : 'bg-white'} cursor-pointer p-4 shadow-sm transition-shadow hover:shadow-md`}
-            onClick={() => onEdit(task)}
+            onClick={() => onOpen()}
         >
             <div className="flex items-center justify-between">
                 <div className="space-x-2">
@@ -177,6 +179,7 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ task, id, onEdit }) => {
                     </div>
                 )}
             </div>
+            {isOpen && <TaskDialog categories={categories} isOpen={isOpen} task={task} onCloseDlg={onClose} />}
         </div>
     );
 };

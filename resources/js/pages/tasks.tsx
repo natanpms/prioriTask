@@ -1,26 +1,21 @@
-import Combobox from '@/components/combobox';
 import { KanbanCard } from '@/components/kanban-card';
 import { KanbanColumn } from '@/components/kanban-column';
+import { TaskDialog } from '@/components/task-dialog';
 import { Button } from '@/components/ui/button';
-import { DialogWrapper } from '@/components/ui/dialog-wrapper';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
 import { useDialog } from '@/hooks/use-dialog';
 // import { useIsMobile } from '@/hooks/use-mobile';
 import AppLayout from '@/layouts/app-layout';
-import { BreadcrumbItem, Category, ColumnTask, ResponseFlash, Task } from '@/types';
+import { BreadcrumbItem, Category, ColumnTask, Task } from '@/types';
 import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, closestCenter } from '@dnd-kit/core';
-import { Head, router, useForm, usePage } from '@inertiajs/react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Head, router, usePage } from '@inertiajs/react';
+import { useEffect, useMemo, useState } from 'react';
 import { FaPlus, FaSearch } from 'react-icons/fa';
 import { IoWarning } from 'react-icons/io5';
 import { toast } from 'sonner';
 
 const Tasks: React.FC = () => {
-    const formRef = useRef<HTMLFormElement>(null);
     const { props } = usePage();
-    // const isMobile = useIsMobile();
     const categories = (props?.categories as Category[]) || [];
     
     const tasks = useMemo(() => {
@@ -50,18 +45,8 @@ const Tasks: React.FC = () => {
         setFilteredTasks(tasks);
     }, [tasks]);
 
-    const { data, setData, reset, errors, post, processing } = useForm({
-        title: '',
-        description: '',
-        priority: '',
-        step: 'pendente' as 'pendente' | 'andamento' | 'concluido',
-        category_id: '',
-        due_date: '',
-    });
-
     const breadcrumbs: BreadcrumbItem[] = [{ title: 'Tarefas', href: '/tasks' }];
     const { onOpen, onClose, isOpen } = useDialog();
-    const response = props.flash as ResponseFlash;
 
     const handleDragStart = (event: DragStartEvent) => {
         const { active } = event;
@@ -110,22 +95,6 @@ const Tasks: React.FC = () => {
                 },
             );
         }
-    };
-
-    const handleNewTask = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-
-        post(route('tasks.store'), {
-            preserveScroll: true,
-            onSuccess: () => {
-                reset();
-                onClose();
-                toast.success(response.success || 'Task criada com sucesso!');
-            },
-            onError: () => {
-                Object.values(errors).forEach((err) => toast.error(err as string));
-            },
-        });
     };
 
     const handleFilterCategories = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -200,124 +169,12 @@ const Tasks: React.FC = () => {
                                 activeTask={activeTask}
                             />
                         ))}
-                        <DragOverlay>{activeTask ? <KanbanCard task={activeTask} id={activeTask.id} onEdit={(() => {})} /> : null}</DragOverlay>
+                        <DragOverlay>{activeTask ? <KanbanCard task={activeTask} id={activeTask.id} /> : null}</DragOverlay>
                     </DndContext>
                 </div>
 
                 {isOpen && (
-                    <DialogWrapper
-                        title={'Adicionar Task'}
-                        isOpen={isOpen}
-                        onClose={onClose}
-                        buttonText={'Confirmar alterações'}
-                        processing={processing}
-                        handleClick={() => formRef.current?.requestSubmit()}
-                    >
-                        <form ref={formRef} onSubmit={handleNewTask} className="space-y-4">
-                            <div>
-                                <label className="mb-2 block font-semibold text-gray-700">Título</label>
-                                <Input
-                                    name="title"
-                                    type="text"
-                                    value={data.title}
-                                    onChange={(e) => setData('title', e.target.value)}
-                                    placeholder="Ex: Estudar programação..."
-                                    className="w-full"
-                                    required
-                                />
-                            </div>
-
-                            <div>
-                                <label className="mb-2 block font-semibold text-gray-700">Descrição</label>
-                                <Textarea
-                                    name="description"
-                                    value={data.description}
-                                    onChange={(e) => setData('description', e.target.value)}
-                                    placeholder="Descreva os detalhes da tarefa..."
-                                />
-                            </div>
-
-                            <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2">
-                                <div>
-                                    <label className="mb-1 block font-semibold text-gray-700">Prioridade</label>
-                                    <Combobox
-                                        name="priority"
-                                        groupOptions={[
-                                            {
-                                                value: 'baixa',
-                                                label: 'Baixa',
-                                            },
-                                            {
-                                                value: 'media',
-                                                label: 'Média',
-                                            },
-                                            {
-                                                value: 'alta',
-                                                label: 'Alta',
-                                            },
-                                        ]}
-                                        value={data.priority}
-                                        onChange={(value) => setData('priority', value)}
-                                        textPlaceholder="Selecione a prioridade"
-                                        isRequired
-                                    />
-                                </div>
-                                <div>
-                                    <label className="mb-1 block font-semibold text-gray-700">Status</label>
-                                    <Input type="hidden" name="step" value="pendente" />
-                                     <Combobox
-                                        name="step"
-                                        defaultValue='pendente'
-                                        groupOptions={[
-                                            {
-                                                value: 'pendente',
-                                                label: 'Pendente',
-                                            }
-                                        ]}
-                                        value={'pendente'}
-                                        isDisabled
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2">
-                                <div>
-                                    <label className="mb-2 block font-semibold text-gray-700">Categoria</label>
-                                    <Select
-                                        name="category_id"
-                                        value={data.category_id}
-                                        onValueChange={(value) => setData('category_id', value)}
-                                        required
-                                    >
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Selecione a categoria" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                {categories.map((category) => (
-                                                    <SelectItem key={category.id} value={String(category.id)}>
-                                                        {category.name}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-
-                                <div>
-                                    <label className="mb-2 block font-semibold text-gray-700">Data de vencimento</label>
-                                    <Input
-                                        name="due_date"
-                                        type="date"
-                                        value={data.due_date}
-                                        onChange={(e) => setData('due_date', e.target.value)}
-                                        className="w-full"
-                                        required
-                                    />
-                                </div>
-                            </div>
-                        </form>
-                    </DialogWrapper>
+                    <TaskDialog categories={categories} isOpen={isOpen} onCloseDlg={onClose}/>
                 )}
             </div>
         </AppLayout>
