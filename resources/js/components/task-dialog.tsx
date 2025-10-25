@@ -177,7 +177,7 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({ isOpen, onCloseDlg, task
                         <Input
                             name="due_date"
                             type="date"
-                            value={data.due_date}
+                            value={data?.due_date ?  new Date(data.due_date).toLocaleDateString('en-CA') : ''}
                             onChange={(e) => setData('due_date', e.target.value)}
                             className="w-full"
                             required
