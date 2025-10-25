@@ -1,3 +1,4 @@
+import Combobox from '@/components/combobox';
 import { KanbanCard } from '@/components/kanban-card';
 import { KanbanColumn } from '@/components/kanban-column';
 import { Button } from '@/components/ui/button';
@@ -21,6 +22,7 @@ const Tasks: React.FC = () => {
     const { props } = usePage();
     // const isMobile = useIsMobile();
     const categories = (props?.categories as Category[]) || [];
+    
     const tasks = useMemo(() => {
         return (props?.tasks as Task[]) || [];
     }, [props.tasks]);
@@ -142,7 +144,6 @@ const Tasks: React.FC = () => {
         setFilteredTasks(filtered);
     };
 
-
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Tasks" />
@@ -199,7 +200,7 @@ const Tasks: React.FC = () => {
                                 activeTask={activeTask}
                             />
                         ))}
-                        <DragOverlay>{activeTask ? <KanbanCard task={activeTask} id={activeTask.id} /> : null}</DragOverlay>
+                        <DragOverlay>{activeTask ? <KanbanCard task={activeTask} id={activeTask.id} onEdit={(() => {})} /> : null}</DragOverlay>
                     </DndContext>
                 </div>
 
@@ -239,32 +240,43 @@ const Tasks: React.FC = () => {
                             <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2">
                                 <div>
                                     <label className="mb-1 block font-semibold text-gray-700">Prioridade</label>
-                                    <Select name="priority" value={data.priority} onValueChange={(value) => setData('priority', value)} required>
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Selecione a prioridade" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                <SelectItem value="baixa">Baixa</SelectItem>
-                                                <SelectItem value="media">Média</SelectItem>
-                                                <SelectItem value="alta">Alta</SelectItem>
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
+                                    <Combobox
+                                        name="priority"
+                                        groupOptions={[
+                                            {
+                                                value: 'baixa',
+                                                label: 'Baixa',
+                                            },
+                                            {
+                                                value: 'media',
+                                                label: 'Média',
+                                            },
+                                            {
+                                                value: 'alta',
+                                                label: 'Alta',
+                                            },
+                                        ]}
+                                        value={data.priority}
+                                        onChange={(value) => setData('priority', value)}
+                                        textPlaceholder="Selecione a prioridade"
+                                        isRequired
+                                    />
                                 </div>
                                 <div>
                                     <label className="mb-1 block font-semibold text-gray-700">Status</label>
                                     <Input type="hidden" name="step" value="pendente" />
-                                    <Select name="step" value="pendente" disabled>
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue defaultValue="pendente" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                <SelectItem value="pendente">Pendente</SelectItem>
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
+                                     <Combobox
+                                        name="step"
+                                        defaultValue='pendente'
+                                        groupOptions={[
+                                            {
+                                                value: 'pendente',
+                                                label: 'Pendente',
+                                            }
+                                        ]}
+                                        value={'pendente'}
+                                        isDisabled
+                                    />
                                 </div>
                             </div>
 

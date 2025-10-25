@@ -16,7 +16,7 @@ class CategoryController extends Controller
             'nome-categoria' => [
                 'required',
                 'string',
-                'min:5',
+                'min:2',
                 'max:255',
                 // valida se essa categoria ja existe para o usuario logado
                 Rule::unique('categories', 'name')

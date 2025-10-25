@@ -1,23 +1,27 @@
+import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsTablet } from '@/hooks/use-tablet';
 import { formatDateToText, formatFirstLetterToUpperCase, verifyIfDateIsPastDue } from '@/lib/utils';
 import { Category, ResponseFlash, SubMenuProps, Task } from '@/types';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { useForm, usePage } from '@inertiajs/react';
+import { router, useForm, usePage } from '@inertiajs/react';
+import React from 'react';
 import { FaEdit } from 'react-icons/fa';
+import { IoMdCheckmarkCircle } from 'react-icons/io';
 import { IoCopyOutline } from 'react-icons/io5';
 import { MdDelete } from 'react-icons/md';
 import { RiDraggable } from 'react-icons/ri';
 import { toast } from 'sonner';
+import Combobox from './combobox';
 import DropdownWrapper from './dropdown-wrapper';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { useIsTablet } from '@/hooks/use-tablet';
 
 interface KanbanCardProps {
     task: Task;
     id: number;
+    onEdit: (task: Task) => void;
 }
 
-export const KanbanCard: React.FC<KanbanCardProps> = ({ task, id }) => {
+export const KanbanCard: React.FC<KanbanCardProps> = ({ task, id, onEdit }) => {
     let bgColorPriority;
 
     switch (task?.priority) {
@@ -63,6 +67,24 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ task, id }) => {
         });
     };
 
+    const handleStepChange = (newStep: string) => {
+        router.patch(
+            route('tasks.update'),
+            {
+                id: task.id,
+                step: newStep,
+            },
+            {
+                onSuccess: () => {
+                    toast.success('Task movida com sucesso!');
+                },
+                onError: (error) => {
+                    toast.error('Erro ao mover task: ' + JSON.stringify(error));
+                },
+            },
+        );
+    };
+
     const subMenuOptions: SubMenuProps[] = [
         {
             title: 'Copiar categoria',
@@ -73,7 +95,6 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ task, id }) => {
                 toast.success('Categoria copiada!');
             },
         },
-        // { title: 'Editar', variant: 'edit', icon: <MdModeEdit />, handleClick: () => onEdit(task) },
         { title: 'Excluir', variant: 'destructive', icon: <MdDelete />, handleClick: () => handleDeleteTask(task.id) },
     ];
 
@@ -83,6 +104,7 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ task, id }) => {
             style={style}
             {...attributes}
             className={`space-y-3 rounded-lg border border-gray-200 ${task?.step === 'concluido' ? 'bg-white/70' : 'bg-white'} cursor-pointer p-4 shadow-sm transition-shadow hover:shadow-md`}
+            onClick={() => onEdit(task)}
         >
             <div className="flex items-center justify-between">
                 <div className="space-x-2">
@@ -103,9 +125,41 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ task, id }) => {
                         {formatFirstLetterToUpperCase(task?.priority)}
                     </span>
                 </div>
-                {(task.step !== 'concluido' && (!isMobile && !isTablet)) && (
-                    <div {...listeners} onClick={(e) => e.stopPropagation()} className="cursor-move p-2">
-                        <RiDraggable />
+                {task.step !== 'concluido' ? (
+                    <React.Fragment>
+                        <div className="w-auto" onClick={(e) => e.stopPropagation()}>
+                            <Combobox
+                                name="optStep"
+                                groupOptions={[
+                                    {
+                                        value: 'pendente',
+                                        label: 'Pendente',
+                                    },
+                                    {
+                                        value: 'andamento',
+                                        label: 'Em Progresso',
+                                    },
+                                    {
+                                        value: 'concluido',
+                                        label: 'Concluído',
+                                    },
+                                ]}
+                                value={task.step}
+                                onChange={handleStepChange}
+                                textPlaceholder="Mover para..."
+                            />
+                        </div>
+                        {!isMobile && !isTablet && (
+                            <div {...listeners} onClick={(e) => e.stopPropagation()} className="cursor-move p-2">
+                                <RiDraggable />
+                            </div>
+                        )}
+                    </React.Fragment>
+                ) : null}
+
+                {task.step === 'concluido' && (
+                    <div>
+                        <IoMdCheckmarkCircle size={25} className="text-green-500" />
                     </div>
                 )}
             </div>
@@ -115,13 +169,14 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ task, id }) => {
                 <p className={`text-xs font-medium ${isDuePast ? 'text-red-500' : 'text-gray-500'} `}>
                     {textDuePast} em {formatDateToText(task.due_date)}
                 </p>
-                <div className="flex items-center gap-2">
-                    <div onClick={(e) => e.stopPropagation()}>
-                        <DropdownWrapper iconPrincipal={<FaEdit className="h-4 w-4" />} subMenuOptions={subMenuOptions} />
+                {task.step !== 'concluido' && (
+                    <div className="flex items-center gap-2">
+                        <div onClick={(e) => e.stopPropagation()}>
+                            <DropdownWrapper iconPrincipal={<FaEdit className="h-4 w-4" />} subMenuOptions={subMenuOptions} />
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
-
         </div>
     );
 };
