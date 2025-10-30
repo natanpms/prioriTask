@@ -20,7 +20,7 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({ isOpen, onCloseDlg, task
     const { props } = usePage();
     const response = props.flash as ResponseFlash;
 
-    const { data, setData, reset, errors, post, put, processing } = useForm({
+    const { data, setData, reset, errors, post, patch, processing } = useForm({
         id: task?.id || '',
         title: task?.title || '',
         description: task?.description || '',
@@ -49,7 +49,7 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({ isOpen, onCloseDlg, task
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const url = task ? route('tasks.update', { task: task.id }) : route('tasks.store');
-        const method = task ? 'put' : 'post';
+        const method = task ? 'patch' : 'post';
 
         const options = {
             preserveScroll: true,
@@ -63,8 +63,8 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({ isOpen, onCloseDlg, task
             },
         };
 
-        if (method === 'put') {
-            put(url, options);
+        if (method === 'patch') {
+            patch(url, options);
         } else {
             post(url, options);
         }
@@ -149,6 +149,7 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({ isOpen, onCloseDlg, task
                             ]}
                             value={data.step}
                             onChange={(value) => setData('step', value as 'pendente' | 'andamento' | 'concluido')}
+                            isDisabled={!task}
                         />
                     </div>
                 </div>
