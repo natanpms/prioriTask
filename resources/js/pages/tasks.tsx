@@ -83,6 +83,11 @@ const Tasks: React.FC = () => {
                 route('tasks.update'),
                 {
                     id: originalTask.id,
+                    title: originalTask.title,
+                    description : originalTask.description,
+                    priority : originalTask.priority, 
+                    due_date : originalTask.due_date,
+                    category_id : originalTask.category_id,
                     step: newStep,
                 },
                 {

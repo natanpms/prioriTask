@@ -74,6 +74,11 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ task, id }) => {
             route('tasks.update'),
             {
                 id: task.id,
+                title: task.title,
+                description: task.description,
+                priority: task.priority,
+                due_date: task.due_date,
+                category_id: task.category_id,
                 step: newStep,
             },
             {
@@ -106,7 +111,7 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ task, id }) => {
             style={style}
             {...attributes}
             className={`space-y-3 rounded-lg border border-gray-200 ${task?.step === 'concluido' ? 'bg-white/70' : 'bg-white'} cursor-pointer p-4 shadow-sm transition-shadow hover:shadow-md`}
-            onClick={() => onOpen()}
+            onClick={() => (task.step !== 'concluido' ? onOpen() : null)}
         >
             <div className="flex items-center justify-between">
                 <div className="space-x-2">

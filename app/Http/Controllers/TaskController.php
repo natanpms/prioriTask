@@ -49,8 +49,13 @@ class TaskController extends Controller
 
     public function update(Request $request)
     {
-        $request->validate([
+        $fields = $request->validate([
             'id' => 'required|exists:tasks,id',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'priority' => ['required', Rule::enum(TaskPriority::class)], 
+            'due_date' => 'nullable|date',
+            'category_id' => 'nullable|exists:categories,id',
             'step' => ['required', Rule::enum(TaskStep::class)],
         ]);
 
@@ -61,8 +66,7 @@ class TaskController extends Controller
                 ->with('error', 'Você não tem permissão para editar essa task.');
         }
 
-        $task->step = $request->step;
-        $task->save();
+        $task->update($fields); 
 
         return redirect()->route('tasks')->with('success', 'Task atualizada com sucesso!');
     }
