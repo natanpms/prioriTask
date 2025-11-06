@@ -3,7 +3,7 @@ import { KanbanColumn } from '@/components/kanban-column';
 import { TaskDialog } from '@/components/task-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useDialog } from '@/hooks/use-dialog';
+import { useDialog } from '@/contexts/DialogContext';
 // import { useIsMobile } from '@/hooks/use-mobile';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem, Category, ColumnTask, Task } from '@/types';
@@ -46,7 +46,7 @@ const Tasks: React.FC = () => {
     }, [tasks]);
 
     const breadcrumbs: BreadcrumbItem[] = [{ title: 'Tarefas', href: '/tasks' }];
-    const { onOpen, onClose, isOpen } = useDialog();
+    const { onOpen, onClose, isOpen, task } = useDialog();
 
     const handleDragStart = (event: DragStartEvent) => {
         const { active } = event;
@@ -84,10 +84,10 @@ const Tasks: React.FC = () => {
                 {
                     id: originalTask.id,
                     title: originalTask.title,
-                    description : originalTask.description,
-                    priority : originalTask.priority, 
-                    due_date : originalTask.due_date,
-                    category_id : originalTask.category_id,
+                    description: originalTask.description,
+                    priority: originalTask.priority,
+                    due_date: originalTask.due_date,
+                    category_id: originalTask.category_id,
                     step: newStep,
                 },
                 {
@@ -112,7 +112,6 @@ const Tasks: React.FC = () => {
 
         const matchingCategories = categories.filter((category) => category.name.toLowerCase().includes(value)).map((category) => category.id);
 
-        // filtre as tasks de acordo com a categoria digitada
         const filtered = tasks.filter((task) => matchingCategories.includes(task.category_id));
 
         setFilteredTasks(filtered);
@@ -172,15 +171,14 @@ const Tasks: React.FC = () => {
                                 title={column.title}
                                 tasks={column.tasks.filter((task) => filteredTasks.includes(task))}
                                 activeTask={activeTask}
+                                onCardClick={onOpen}
                             />
                         ))}
                         <DragOverlay>{activeTask ? <KanbanCard task={activeTask} id={activeTask.id} /> : null}</DragOverlay>
                     </DndContext>
                 </div>
 
-                {isOpen && (
-                    <TaskDialog categories={categories} isOpen={isOpen} onCloseDlg={onClose}/>
-                )}
+                {isOpen && <TaskDialog categories={categories} isOpen={isOpen} onCloseDlg={onClose} task={task} />}
             </div>
         </AppLayout>
     );
