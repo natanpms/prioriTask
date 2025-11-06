@@ -6,9 +6,10 @@ import { KanbanCard } from './kanban-card';
 interface KanbanColumnProps extends Pick<ColumnTask, 'tasks' | 'title'> {
     id: string;
     activeTask: Task | null;
+    onCardClick: (task: Task) => void;
 }
 
-export const KanbanColumn: React.FC<KanbanColumnProps> = ({ title, tasks, id, activeTask }) => {
+export const KanbanColumn: React.FC<KanbanColumnProps> = ({ title, tasks, id, activeTask, onCardClick }) => {
     const { setNodeRef } = useDroppable({
         id,
     });
@@ -19,7 +20,7 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({ title, tasks, id, ac
                 <div className="scrollbar-thin scrollbar-thumb-primary scrollbar-track-transparent max-h-[50vh] space-y-4 overflow-y-auto lg:max-h-[75vh]">
                     {tasks.map((task) => (
                         <>
-                            {activeTask?.id === task.id ? null : <KanbanCard key={task.id} task={task} id={task.id} />}
+                            {activeTask?.id === task.id ? null : <KanbanCard key={task.id} task={task} id={task.id} onClick={onCardClick} />}
                         </>
                     ))}
                 </div>
