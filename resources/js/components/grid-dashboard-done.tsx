@@ -7,14 +7,14 @@ const GridDashboardDone = () => {
 
     return (
         <div className="w-full p-4">
-            <div className="flex justify-between">
+            <div className="flex flex-col lg:flex-row lg:justify-between px-4 space-y-2">
                 <div className="flex items-center space-x-2">
                     <div className="rounded-full bg-[#F3F7FD] p-2">
                         <FaCheck className="text-primary/40" />
                     </div>
                     <span className="font-medium text-black/40 dark:text-gray-300">Tarefas Concluídas</span>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex justify-center items-center gap-3">
                     {filteredTasksDone?.map((t, index) => (
                         <div className="px-4">
                             <span
