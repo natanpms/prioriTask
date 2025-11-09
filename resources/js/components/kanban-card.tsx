@@ -110,12 +110,12 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ task, id, onClick }) => 
             {...attributes}
             className={`space-y-3 rounded-lg border border-gray-200 ${task?.step === 'concluido' ? 'bg-white/70' : 'bg-white'} cursor-pointer p-4 shadow-sm transition-shadow hover:shadow-md`}
             onClick={() => {
-                if(typeof onClick === 'function' && task.step !== 'concluido'){
-                     onClick(task)
-                     return;
+                if (typeof onClick === 'function' && task.step !== 'concluido') {
+                    onClick(task);
+                    return;
                 }
-                return null
-            } }
+                return null;
+            }}
         >
             <div className="flex items-center justify-between">
                 <div className="space-x-2">
@@ -178,7 +178,7 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ task, id, onClick }) => 
             <p className="text-sm text-gray-500">{task.description}</p>
             <div className="flex items-center justify-between">
                 <p className={`text-xs font-medium ${isDuePast ? 'text-red-500' : 'text-gray-500'} `}>
-                    {textDuePast} em {formatDateToText(task.due_date)}
+                    {textDuePast} {formatDateToText(task.due_date)}
                 </p>
                 {task.step !== 'concluido' && (
                     <div className="flex items-center gap-2">

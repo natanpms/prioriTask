@@ -4,6 +4,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TaskController;
 use App\Models\Category;
 use App\Models\Task;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -16,6 +17,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('dashboard', [
             'tasks' => Task::where('user_id', auth()->id())->select('id', 'title', 'description', 'priority', 'step', 'due_date', 'category_id')->get(),
             'categories' => Category::where('user_id', auth()->id())->withCount('tasks')->get(['id', 'name', 'color']),
+            'tasksDueDate' => Task::where('user_id', auth()->id())
+                ->whereNot('step', 'concluido')
+                ->where('due_date', '<', Carbon::today()) // pega apenas vencidas
+                ->orderBy('due_date', 'desc')
+                ->get(),
+            'tasksNotDueDate' => Task::where('user_id', auth()->id())
+                ->whereNot('step', 'concluido')
+                ->where('due_date', '>=', Carbon::today())
+                ->orderBy('due_date', 'asc')->get(),
         ]);
     })->name('dashboard');
 

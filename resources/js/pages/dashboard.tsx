@@ -1,9 +1,10 @@
 import GridDashboard from '@/components/grid-dashboard';
+import { GridTaskDate } from '@/components/grid-task-date';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
 import AppLayout from '@/layouts/app-layout';
 import { filterTasksByPriority, filterTasksByStep } from '@/lib/utils';
-import { CategoryCountedTasks, Task, type BreadcrumbItem } from '@/types';
+import { CategoryCountedTasks, Task, tasksDueDate, type BreadcrumbItem } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
 import { Download } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
@@ -11,6 +12,7 @@ import { FaCheck } from 'react-icons/fa';
 import { FaClockRotateLeft } from 'react-icons/fa6';
 import { GrInProgress } from 'react-icons/gr';
 import { HiOutlineCollection } from 'react-icons/hi';
+import { MdDateRange } from 'react-icons/md';
 import { Cell, Pie, PieChart, Tooltip } from 'recharts';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -25,6 +27,8 @@ export default function Dashboard() {
     const isMobile = useIsMobile();
     const tasks = useMemo(() => (props?.tasks as Task[]) || [], [props.tasks]);
     const categories = useMemo(() => (props?.categories as CategoryCountedTasks[]) || [], [props.categories]);
+    const tasksDueDate = useMemo(() => (props.tasksDueDate as tasksDueDate[]) || [], [props.tasksDueDate]);
+    const tasksNotDueDate = useMemo(() => (props.tasksNotDueDate as tasksDueDate[]) || [], [props.tasksNotDueDate]);
 
     const [tasksPending, setTasksPending] = useState<Task[]>([]);
     const [tasksLoading, setTasksLoading] = useState<Task[]>([]);
@@ -65,6 +69,21 @@ export default function Dashboard() {
             count: tasksLoading.length,
             data: loadingData,
             icon: <GrInProgress className="text-primary/40" />,
+        },
+    ];
+
+    const gridDate = [
+        {
+            titleSection: 'Tarefas não concluidas vencidas',
+            icon: <MdDateRange className="text-primary/40" />,
+            tasks: tasksDueDate,
+            type: 'dueDate',
+        },
+        {
+            titleSection: 'Tarefas pendentes',
+            icon: <MdDateRange className="text-primary/40" />,
+            tasks: tasksNotDueDate,
+            type: 'notDue',
         },
     ];
 
@@ -111,7 +130,11 @@ export default function Dashboard() {
                             <Tooltip />
                         </PieChart>
                     </div>
-                    {/* <div>teste 1</div> */}
+                    <div className="grid grid-cols-1 gap-2">
+                        {gridDate?.map((grid, index) => (
+                            <GridTaskDate key={index} titleSection={grid.titleSection} icon={grid.icon} tasks={grid.tasks} type={grid.type} />
+                        ))}
+                    </div>
                 </div>
             </div>
         </AppLayout>

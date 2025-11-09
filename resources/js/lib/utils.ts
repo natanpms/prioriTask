@@ -9,20 +9,20 @@ export function cn(...inputs: ClassValue[]) {
 export function formatDateToText(date: Date | string): string {
     if (!date) return '';
 
-    if (typeof date === 'string') {
-        const newDate = new Date(date);
-        const day = newDate.getDate();
-        const month = newDate.toLocaleString('pt-BR', { month: 'long' });
-        const year = newDate.getFullYear();
+    const newDate = typeof date === 'string' ? new Date(date) : date;
 
-        return `${day} de ${month}, ${year}`;
+    const today = new Date();
+    const isToday = newDate.getFullYear() === today.getFullYear() && newDate.getMonth() === today.getMonth() && newDate.getDate() === today.getDate();
+
+    if (isToday) {
+        return 'Hoje';
     }
 
-    return date.toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric',
-    });
+    const day = newDate.getDate();
+    const month = newDate.toLocaleString('pt-BR', { month: 'long' });
+    const year = newDate.getFullYear();
+
+    return `${day} de ${month}, ${year}`;
 }
 
 export function formatFirstLetterToUpperCase(text: string): string {

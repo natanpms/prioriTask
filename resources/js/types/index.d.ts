@@ -77,6 +77,13 @@ export type CategoryCountedTasks = {
     tasks_count?: number;
 };
 
+export type tasksDueDate = {
+    id: number;
+    title: string;
+    due_date: string;
+    priority: string;
+};
+
 export type SubMenuProps = {
     title: string;
     variant: 'default' | 'destructive' | 'edit' | 'copy';
