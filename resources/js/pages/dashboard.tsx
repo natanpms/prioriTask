@@ -1,14 +1,17 @@
 import GridDashboard from '@/components/grid-dashboard';
-import GridDashboardDone from '@/components/grid-dashboard-done';
 import { Button } from '@/components/ui/button';
+import { useIsMobile } from '@/hooks/use-mobile';
 import AppLayout from '@/layouts/app-layout';
 import { filterTasksByPriority, filterTasksByStep } from '@/lib/utils';
-import { Task, type BreadcrumbItem } from '@/types';
+import { CategoryCountedTasks, Task, type BreadcrumbItem } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
 import { Download } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { FaCheck } from 'react-icons/fa';
 import { FaClockRotateLeft } from 'react-icons/fa6';
 import { GrInProgress } from 'react-icons/gr';
+import { HiOutlineCollection } from 'react-icons/hi';
+import { Cell, Pie, PieChart, Tooltip } from 'recharts';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -19,22 +22,27 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function Dashboard() {
     const { props } = usePage();
-
+    const isMobile = useIsMobile();
     const tasks = useMemo(() => (props?.tasks as Task[]) || [], [props.tasks]);
+    const categories = useMemo(() => (props?.categories as CategoryCountedTasks[]) || [], [props.categories]);
 
     const [tasksPending, setTasksPending] = useState<Task[]>([]);
     const [tasksLoading, setTasksLoading] = useState<Task[]>([]);
+    const [tasksFinished, setTasksFinished] = useState<Task[]>([]);
 
     useEffect(() => {
         const pending = filterTasksByStep(tasks, 'pendente');
         const loadingTask = filterTasksByStep(tasks, 'andamento');
+        const finishTask = filterTasksByStep(tasks, 'concluido');
 
         setTasksPending(pending);
         setTasksLoading(loadingTask);
+        setTasksFinished(finishTask);
     }, [tasks]);
 
     const pendingData = useMemo(() => filterTasksByPriority(tasksPending), [tasksPending]);
     const loadingData = useMemo(() => filterTasksByPriority(tasksLoading), [tasksLoading]);
+    const finishedData = useMemo(() => filterTasksByPriority(tasksFinished), [tasksFinished]);
 
     const gridOptions = [
         {
@@ -43,6 +51,13 @@ export default function Dashboard() {
             count: tasksPending.length,
             data: pendingData,
             icon: <FaClockRotateLeft className="text-primary/40" />,
+        },
+        {
+            type: 'finished',
+            title: 'Tarefas Concluídas',
+            count: tasksFinished.length,
+            data: finishedData,
+            icon: <FaCheck className="text-primary/40" />,
         },
         {
             type: 'loading',
@@ -63,13 +78,40 @@ export default function Dashboard() {
                         <Download />
                     </Button>
                 </div>
-                <div className="grid auto-rows-min gap-4 md:grid-cols-2 h-auto">
+                <div className="grid h-auto auto-rows-min gap-4 md:grid-cols-3">
                     {gridOptions?.map((grid, index) => (
                         <GridDashboard key={index} type={grid.type} title={grid.title} tasksCount={grid.count} tasks={grid.data} icon={grid.icon} />
                     ))}
                 </div>
-                <div className="relative min-h-[100vh] flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
-                    <GridDashboardDone />
+
+                <div className="grid w-full grid-cols-1 gap-2 md:grid-cols-2">
+                    {/* GRID pra mostrar qtd de tarefas por categoria do user */}
+                    <div className="grid grid-cols-1 rounded-xl border border-sidebar-border/70 p-4 dark:border-sidebar-border">
+                        <div className="flex items-center justify-between gap-2 space-x-2 px-4 py-3">
+                            <div className="flex items-center space-x-2">
+                                <div className="rounded-full bg-[#F3F7FD] p-2">
+                                    <HiOutlineCollection className="text-primary/40" />
+                                </div>
+                                <span className="font-medium text-black/40 dark:text-gray-300">Tarefas por categorias</span>
+                            </div>
+                            <span className="font-medium text-gray-700 dark:text-gray-300">{categories?.length}</span>
+                        </div>
+                        <PieChart width={'100%'} height={400}>
+                            <Pie
+                                data={categories.map((category) => ({ name: category.name, students: category.tasks_count }))}
+                                dataKey="students"
+                                outerRadius={isMobile ? 180 : 150}
+                                fill="green"
+                                style={{ cursor: 'pointer', outline: 'none' }}
+                            >
+                                {categories.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={entry.color} />
+                                ))}
+                            </Pie>
+                            <Tooltip />
+                        </PieChart>
+                    </div>
+                    {/* <div>teste 1</div> */}
                 </div>
             </div>
         </AppLayout>

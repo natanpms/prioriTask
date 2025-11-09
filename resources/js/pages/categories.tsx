@@ -11,9 +11,9 @@ import { LoaderCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { IoAddCircleOutline } from "react-icons/io5";
 import { toast } from "sonner";
-import { useDialog } from "@/hooks/use-dialog";
 import { DialogWrapper } from "@/components/ui/dialog-wrapper";
 import { DialogDescription } from "@/components/ui/dialog";
+import { useDialog } from "@/contexts/DialogContext";
 
 
 const Categories: React.FC = () => {

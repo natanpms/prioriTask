@@ -1,12 +1,13 @@
 import { Link } from '@inertiajs/react';
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { Button } from './ui/button';
+import { TaskDataDashboard } from '@/types';
 
 interface GridProps {
     type?: string;
     title: string;
     tasksCount: number;
-    tasks: any[];
+    tasks: TaskDataDashboard[];
     icon: React.ReactNode;
 }
 

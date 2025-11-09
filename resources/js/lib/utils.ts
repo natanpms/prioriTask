@@ -55,7 +55,6 @@ export function verifyIfDateIsPastDue(date: string | Date): boolean {
     // seta que o ultimo horario do dia seria 23:59:59 para comparar apenas a data
     dueDate.setHours(23, 59, 59, 999);
     currentDate.setHours(23, 59, 59, 999);
-   
 
     return dueDate < currentDate;
 }
