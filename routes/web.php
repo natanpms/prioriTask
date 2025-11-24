@@ -16,7 +16,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard', [
             'tasks' => Task::where('user_id', auth()->id())->select('id', 'title', 'description', 'priority', 'step', 'due_date', 'category_id')->get(),
-            'categories' => Category::where('user_id', auth()->id())->withCount('tasks')->get(['id', 'name', 'color']),
             'tasksDueDate' => Task::where('user_id', auth()->id())
                 ->whereNot('step', 'concluido')
                 ->where('due_date', '<', Carbon::today()) // pega apenas vencidas
@@ -26,6 +25,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 ->whereNot('step', 'concluido')
                 ->where('due_date', '>=', Carbon::today())
                 ->orderBy('due_date', 'asc')->get(),
+            'tasksByCategories' => Category::where('user_id', auth()->id())
+                ->withCount(['tasks' => function ($q) {
+                    $q->where('user_id', auth()->id());
+                }])
+                ->get()
+                ->map(function ($category) {
+                    return [
+                        'id' => $category->id,
+                        'name' => $category->name,
+                        'color' => $category->color,
+                        'tasks_count' => $category->tasks_count,
+                    ];
+                }),
         ]);
     })->name('dashboard');
 

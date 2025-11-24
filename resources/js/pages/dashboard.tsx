@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
 import AppLayout from '@/layouts/app-layout';
 import { filterTasksByPriority, filterTasksByStep } from '@/lib/utils';
-import { CategoryCountedTasks, Task, tasksDueDate, type BreadcrumbItem } from '@/types';
+import { Task, tasksByCategories, tasksDueDate, type BreadcrumbItem } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
 import { Download } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
@@ -26,7 +26,7 @@ export default function Dashboard() {
     const { props } = usePage();
     const isMobile = useIsMobile();
     const tasks = useMemo(() => (props?.tasks as Task[]) || [], [props.tasks]);
-    const categories = useMemo(() => (props?.categories as CategoryCountedTasks[]) || [], [props.categories]);
+    const tasksByCategories = useMemo(() => (props?.tasksByCategories as tasksByCategories[]) || [], [props.tasksByCategories]);
     const tasksDueDate = useMemo(() => (props.tasksDueDate as tasksDueDate[]) || [], [props.tasksDueDate]);
     const tasksNotDueDate = useMemo(() => (props.tasksNotDueDate as tasksDueDate[]) || [], [props.tasksNotDueDate]);
 
@@ -113,22 +113,28 @@ export default function Dashboard() {
                                 </div>
                                 <span className="font-medium text-black/40 dark:text-gray-300">Tarefas por categorias</span>
                             </div>
-                            <span className="font-medium text-gray-700 dark:text-gray-300">{categories?.length}</span>
+                            <span className="font-medium text-gray-700 dark:text-gray-300">{tasksByCategories?.length}</span>
                         </div>
-                        <PieChart width={'100%'} height={400}>
-                            <Pie
-                                data={categories.map((category) => ({ name: category.name, students: category.tasks_count }))}
-                                dataKey="students"
-                                outerRadius={isMobile ? 180 : 150}
-                                fill="green"
-                                style={{ cursor: 'pointer', outline: 'none' }}
-                            >
-                                {categories.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={entry.color} />
-                                ))}
-                            </Pie>
-                            <Tooltip />
-                        </PieChart>
+                        {tasksByCategories?.length > 0 ? (
+                            <PieChart width={'100%'} height={400}>
+                                <Pie
+                                    data={tasksByCategories}
+                                    dataKey="tasks_count"
+                                    nameKey="name"
+                                    outerRadius={isMobile ? 180 : 150}
+                                    style={{ cursor: 'pointer', outline: 'none' }}
+                                    label
+                                >
+                                    {tasksByCategories.map((entry, index) => (
+                                        <Cell key={index} fill={entry.color} />
+                                    ))}
+                                </Pie>
+
+                                <Tooltip formatter={(value, name, props) => [value, props.payload.name]} />
+                            </PieChart>
+                        ) : (
+                            <span className="text-center font-normal text-gray-400">Nenhuma tarefa encontrada para as categorias</span>
+                        )}
                     </div>
                     <div className="grid grid-cols-1 gap-2">
                         {gridDate?.map((grid, index) => (

@@ -70,7 +70,7 @@ export type Category = {
     color: string;
 };
 
-export type CategoryCountedTasks = {
+export type tasksByCategories = {
     id: string;
     name: string;
     color: string;
