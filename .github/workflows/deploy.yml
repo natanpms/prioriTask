@@ -1,0 +1,79 @@
+# Workflow para fazer o deploy da aplicação para a Hostinger via SSH
+# Este workflow será acionado a cada push na branch 'main'
+
+name: Deploy to Hostinger
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout do código do repositório
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Configurar a versão correta do PHP
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, xml, ctype, fileinfo, curl, dom, mysql
+          ini-values: memory_limit=-1
+          tools: composer
+
+      # 3. Instalar dependências do Composer
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+
+      # 4. Configurar a versão correta do Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          cache: 'npm'
+
+      # 5. Instalar dependências do NPM e compilar os assets
+      - name: Install NPM dependencies and build
+        run: |
+          npm install
+          npm run build
+
+      # 6. Configurar a chave SSH para acesso ao servidor
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.HOSTINGER_SSH_KEY }}
+
+      # 7. Sincronizar os arquivos com o servidor Hostinger usando rsync
+      - name: Sync files to Hostinger
+        run: |
+          ssh-keyscan -p ${{ secrets.HOSTINGER_PORT }} ${{ secrets.HOSTINGER_HOST }} >> ~/.ssh/known_hosts
+          rsync -avz --delete \
+            --exclude="/.git"
+            --exclude="/.github"
+            --exclude="/node_modules"
+            --exclude=".env"
+            --exclude="storage/logs/*"
+            -e "ssh -p ${{ secrets.HOSTINGER_PORT }}" \
+            ./ ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST }}:/home/u857945800/domains/prioritask.shop/
+
+      # 8. Executar comandos de deploy no servidor
+      - name: Run deployment commands on server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOSTINGER_HOST }}
+          username: ${{ secrets.HOSTINGER_USER }}
+          key: ${{ secrets.HOSTINGER_SSH_KEY }}
+          port: ${{ secrets.HOSTINGER_PORT }}
+          script: |
+            cd /home/u857945800/domains/prioritask.shop
+            php artisan migrate --force
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+            echo "Deploy finalizado com sucesso!"
