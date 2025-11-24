@@ -72,6 +72,7 @@ jobs:
           port: ${{ secrets.HOSTINGER_PORT }}
           script: |
             cd /home/u857945800/domains/prioritask.shop
+            php artisan optimize:clear
             php artisan migrate --force
             php artisan config:cache
             php artisan route:cache
