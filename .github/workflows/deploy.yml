@@ -1,5 +1,4 @@
 # Workflow para fazer o deploy da aplicação para a Hostinger via SSH
-# Este workflow será acionado a cada push na branch 'main'
 
 name: Deploy to Hostinger
 
