@@ -30,7 +30,9 @@ export default function ForgotPassword({ status }: { status?: string }) {
             <div className="space-y-6">
                 <form onSubmit={submit}>
                     <div className="grid gap-2">
-                        <Label htmlFor="email">Email</Label>
+                        <Label htmlFor="email" className="text-black">
+                            Email
+                        </Label>
                         <Input
                             id="email"
                             type="email"
@@ -40,6 +42,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
                             autoFocus
                             onChange={(e) => setData('email', e.target.value)}
                             placeholder="email@exemplo.com"
+                            className="text-black"
                         />
 
                         <InputError message={errors.email} />
@@ -53,9 +56,11 @@ export default function ForgotPassword({ status }: { status?: string }) {
                     </div>
                 </form>
 
-                <div className="space-x-1 text-center text-sm text-muted-foreground">
+                <div className="space-x-1 text-center text-sm text-muted-foreground dark:text-primary">
                     <span>Ou retorne para o</span>
-                    <TextLink href={route('login')}>login</TextLink>
+                    <TextLink href={route('login')} className="text-primary">
+                        login
+                    </TextLink>
                 </div>
             </div>
         </AuthLayout>

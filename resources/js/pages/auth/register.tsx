@@ -35,7 +35,7 @@ export default function Register() {
     return (
         <AuthLayout title="Cadastre-se" description="Cadastre-se com suas informações">
             <Head title="Register" />
-            <form className="flex flex-col gap-6" onSubmit={submit}>
+            <form className="flex flex-col gap-6 text-black" onSubmit={submit}>
                 <div className="grid gap-6">
                     <div className="grid gap-2">
                         <Label htmlFor="name">Nome</Label>
@@ -118,9 +118,9 @@ export default function Register() {
                     </Button>
                 </div>
 
-                <div className="text-center text-sm text-muted-foreground">
+                <div className="text-center text-sm text-muted-foreground dark:text-primary">
                     Já possui conta?{' '}
-                    <TextLink href={route('login')} tabIndex={6}>
+                    <TextLink href={route('login')} tabIndex={6} className="text-primary">
                         Entrar
                     </TextLink>
                 </div>

@@ -40,7 +40,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
         <AuthLayout title="Login" description="Entre com seu melhor email">
             <Head title="Log in" />
 
-            <form className="flex flex-col gap-6" onSubmit={submit}>
+            <form className="flex flex-col gap-6 text-black" onSubmit={submit}>
                 <div className="grid gap-6">
                     <div className="grid gap-2">
                         <Label htmlFor="email">Email</Label>
@@ -62,7 +62,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                         <div className="flex items-center">
                             <Label htmlFor="password">Senha</Label>
                             {canResetPassword && (
-                                <TextLink href={route('password.request')} className="ml-auto text-sm" tabIndex={5}>
+                                <TextLink href={route('password.request')} className="ml-auto text-sm text-primary" tabIndex={5}>
                                     Esqueceu a senha?
                                 </TextLink>
                             )}
@@ -109,9 +109,9 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                     </Button>
                 </div>
 
-                <div className="text-center text-sm text-muted-foreground">
+                <div className="text-center text-sm text-muted-foreground dark:text-primary">
                     Não possui uma conta?{' '}
-                    <TextLink href={route('register')} tabIndex={5}>
+                    <TextLink href={route('register')} tabIndex={5} className="text-primary">
                         Cadastre-se
                     </TextLink>
                 </div>
