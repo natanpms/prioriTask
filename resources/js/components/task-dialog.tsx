@@ -81,7 +81,7 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({ isOpen, onCloseDlg, task
         >
             <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                    <label className="mb-2 block font-semibold text-gray-700">Título</label>
+                    <label className="mb-2 block font-semibold text-gray-700 dark:text-gray-200">Título</label>
                     <Input
                         name="title"
                         type="text"
@@ -94,7 +94,7 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({ isOpen, onCloseDlg, task
                 </div>
 
                 <div>
-                    <label className="mb-2 block font-semibold text-gray-700">Descrição</label>
+                    <label className="mb-2 block font-semibold text-gray-700 dark:text-gray-200">Descrição</label>
                     <Textarea
                         name="description"
                         value={data.description}
@@ -105,7 +105,7 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({ isOpen, onCloseDlg, task
 
                 <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2">
                     <div>
-                        <label className="mb-1 block font-semibold text-gray-700">Prioridade</label>
+                        <label className="mb-1 block font-semibold text-gray-700 dark:text-gray-200">Prioridade</label>
                         <Combobox
                             name="priority"
                             groupOptions={[
@@ -129,7 +129,7 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({ isOpen, onCloseDlg, task
                         />
                     </div>
                     <div>
-                        <label className="mb-1 block font-semibold text-gray-700">Status</label>
+                        <label className="mb-1 block font-semibold text-gray-700 dark:text-gray-200">Status</label>
                         <Combobox
                             name="step"
                             defaultValue="pendente"
@@ -156,7 +156,7 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({ isOpen, onCloseDlg, task
 
                 <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2">
                     <div>
-                        <label className="mb-2 block font-semibold text-gray-700">Categoria</label>
+                        <label className="mb-2 block font-semibold text-gray-700 dark:text-gray-200">Categoria</label>
                         <Select name="category_id" value={data.category_id} onValueChange={(value) => setData('category_id', value)} required>
                             <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Selecione a categoria" />
@@ -174,7 +174,7 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({ isOpen, onCloseDlg, task
                     </div>
 
                     <div>
-                        <label className="mb-2 block font-semibold text-gray-700">Data de vencimento</label>
+                        <label className="mb-2 block font-semibold text-gray-700 dark:text-gray-200">Data de vencimento</label>
                         <Input
                             name="due_date"
                             type="date"

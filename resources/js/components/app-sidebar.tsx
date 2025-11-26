@@ -4,7 +4,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Focus , CircleCheckBig, Layers} from 'lucide-react';
+import { CircleCheckBig, Focus, Folder, Layers, LayoutGrid } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -13,17 +13,17 @@ const mainNavItems: NavItem[] = [
         href: '/dashboard',
         icon: LayoutGrid,
     },
-     {
+    {
         title: 'Concentração',
         href: '/concentration',
         icon: Focus,
     },
-     {
+    {
         title: 'Tasks',
         href: '/tasks',
         icon: CircleCheckBig,
     },
-     {
+    {
         title: 'Categorias',
         href: '/categories',
         icon: Layers,
@@ -35,7 +35,7 @@ const footerNavItems: NavItem[] = [
         title: 'Repositório',
         href: 'https://github.com/natanpms/prioriTask',
         icon: Folder,
-    }
+    },
 ];
 
 export function AppSidebar() {

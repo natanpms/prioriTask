@@ -62,6 +62,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
     Route::patch('/tasks', [TaskController::class, 'update'])->name('tasks.update');
 
+    // rota fallback para 404
+    Route::fallback(function () {
+        return Inertia::render('errors/notFound')
+            ->toResponse(request())
+            ->setStatusCode(404);
+    });
 });
 
 require __DIR__.'/settings.php';

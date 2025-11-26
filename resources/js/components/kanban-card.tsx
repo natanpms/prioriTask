@@ -138,7 +138,7 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ task, id, onClick }) => 
                 </div>
                 {task.step !== 'concluido' ? (
                     <React.Fragment>
-                        <div className="w-auto" onClick={(e) => e.stopPropagation()}>
+                        <div className="w-auto text-black" onClick={(e) => e.stopPropagation()}>
                             <Combobox
                                 name="optStep"
                                 groupOptions={[
@@ -161,7 +161,7 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ task, id, onClick }) => 
                             />
                         </div>
                         {!isMobile && !isTablet && (
-                            <div {...listeners} onClick={(e) => e.stopPropagation()} className="cursor-move p-2">
+                            <div {...listeners} onClick={(e) => e.stopPropagation()} className="cursor-move p-2 text-black">
                                 <RiDraggable />
                             </div>
                         )}

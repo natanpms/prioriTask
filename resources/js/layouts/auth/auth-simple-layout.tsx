@@ -9,14 +9,14 @@ interface AuthLayoutProps {
 
 export default function AuthSimpleLayout({ children, title, description }: PropsWithChildren<AuthLayoutProps>) {
     return (
-        <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
-            <div className="w-full max-w-sm">
+        <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-primary p-3 md:p-6">
+            <div className="w-full rounded-lg border bg-white p-4 shadow-md md:max-w-md">
                 <div className="flex flex-col gap-8">
                     <div className="flex flex-col items-center gap-4">
                         <Link href={route('home')} className="flex flex-col items-center gap-2 font-medium">
-                            <div className="mb-1 flex h-9 w-9 items-center justify-center rounded-md space-x-4">
+                            <div className="mb-1 flex h-9 w-9 items-center justify-center space-x-4 rounded-md">
                                 {/* <img src="/logo.svg" alt="Logo" /> */}
-                                <span className='text-xl lg:text-4xl font-bold'>PrioriTask</span>
+                                <span className="text-xl font-bold lg:text-4xl">PrioriTask</span>
                             </div>
                             <span className="sr-only">{title}</span>
                         </Link>

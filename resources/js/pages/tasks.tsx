@@ -17,7 +17,7 @@ import { toast } from 'sonner';
 const Tasks: React.FC = () => {
     const { props } = usePage();
     const categories = (props?.categories as Category[]) || [];
-    
+
     const tasks = useMemo(() => {
         return (props?.tasks as Task[]) || [];
     }, [props.tasks]);
@@ -124,7 +124,9 @@ const Tasks: React.FC = () => {
                 <div className="flex flex-col items-center justify-between space-y-2 xl:flex-row">
                     <div>
                         <h1 className="text-2xl font-bold tracking-wider text-primary md:text-3xl">Gerenciar Tasks</h1>
-                        <p className="font-semibol text-lg tracking-widest text-gray-500 md:text-xl">Adicione, edite ou visualize suas tasks</p>
+                        <p className="font-semibol text-lg tracking-widest text-gray-500 md:text-xl dark:text-gray-200">
+                            Adicione, edite ou visualize suas tasks
+                        </p>
                     </div>
 
                     <div className="flex w-full flex-col items-center justify-end space-y-2 md:flex-row md:space-y-0 md:space-x-3">
@@ -138,7 +140,7 @@ const Tasks: React.FC = () => {
                             {categories.length > 0 ? (
                                 <button
                                     type="button"
-                                    className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-md border-2 border-primary bg-white p-1 text-primary transition-transform duration-200 hover:scale-105 sm:w-1/4 md:w-full"
+                                    className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-md border-2 border-primary bg-white p-1 text-primary transition-transform duration-200 hover:scale-105 sm:w-1/4 md:w-full dark:bg-primary dark:text-white"
                                     onClick={() => onOpen()}
                                 >
                                     <FaPlus size={14} />

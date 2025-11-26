@@ -57,9 +57,10 @@ jobs:
             --exclude '.github' \
             --exclude 'node_modules' \
             --exclude '.env' \
+            --exclude '.htaccess' \
             --exclude 'storage/logs' \
             -e "ssh -p ${{ secrets.HOSTINGER_PORT }}" \
-            ./ ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST }}:/home/u857945800/domains/prioritask.shop/
+            ./ ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST }}:/home/u857945800/domains/prioritask.shop/public_html
 
       # 8. Executar comandos de deploy no servidor
       - name: Run deployment commands on server

@@ -1,6 +1,6 @@
 import { Head, useForm } from '@inertiajs/react';
-import { LoaderCircle } from 'lucide-react';
-import { FormEventHandler } from 'react';
+import { Eye, EyeOff, LoaderCircle } from 'lucide-react';
+import { FormEventHandler, useState } from 'react';
 
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
@@ -27,6 +27,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
         password: '',
         remember: false,
     });
+    const [isVisible, setIsVisible] = useState<boolean>(false);
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -66,17 +67,29 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                 </TextLink>
                             )}
                         </div>
-                        <Input
-                            id="password"
-                            type="password"
-                            required
-                            tabIndex={2}
-                            autoComplete="current-password"
-                            value={data.password}
-                            onChange={(e) => setData('password', e.target.value)}
-                            placeholder="*****"
-                        />
-                        <InputError message={errors.password} />
+                        <div className="relative">
+                            <Input
+                                id="password"
+                                type={isVisible ? 'text' : 'password'}
+                                required
+                                tabIndex={2}
+                                autoComplete="current-password"
+                                value={data.password}
+                                onChange={(e) => setData('password', e.target.value)}
+                                placeholder="*****"
+                                className="pr-10"
+                            />
+                            <InputError message={errors.password} />
+
+                            <button
+                                type="button"
+                                className="absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer text-muted-foreground"
+                                onClick={() => setIsVisible(!isVisible)}
+                                tabIndex={-1}
+                            >
+                                {isVisible ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                            </button>
+                        </div>
                     </div>
 
                     <div className="flex items-center space-x-3">
@@ -97,7 +110,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                 </div>
 
                 <div className="text-center text-sm text-muted-foreground">
-                    Não possui uma conta? {' '}
+                    Não possui uma conta?{' '}
                     <TextLink href={route('register')} tabIndex={5}>
                         Cadastre-se
                     </TextLink>

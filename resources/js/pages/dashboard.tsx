@@ -92,7 +92,7 @@ export default function Dashboard() {
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-end space-x-2">
-                    <span className="text-sm text-primary/60">Gerar Relatório de produtividade</span>
+                    <span className="text-sm text-primary/60 dark:text-primary">Gerar Relatório de produtividade</span>
                     <Button variant="outline" size="icon" aria-label="Submit">
                         <Download />
                     </Button>
